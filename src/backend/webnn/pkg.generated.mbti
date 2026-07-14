@@ -1,0 +1,358 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/backend/webnn"
+
+import {
+  "mizchi/js/core",
+  "mizchi/webnn/litert",
+  "mizchi/webnn/model",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+  "mizchi/webnn/webnn/compat",
+  "mizchi/webnn/webnn/raw",
+  "moonbitlang/core/debug",
+  "moonbitlang/core/ref",
+}
+
+// Values
+pub fn backend_operators() -> Array[String]
+
+pub async fn probe_capabilities(@compat.DevicePreference) -> WebNNCapabilities
+
+// Errors
+
+// Types and methods
+pub struct TfliteCpuRunner {
+  runtime : @litert.TfliteRuntimeModel
+}
+pub fn TfliteCpuRunner::compile(Bytes) -> Self raise
+pub fn TfliteCpuRunner::inputs(Self) -> Array[@litert.TfliteRuntimeTensor]
+pub fn TfliteCpuRunner::outputs(Self) -> Array[@litert.TfliteRuntimeTensor]
+pub fn TfliteCpuRunner::run(Self, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput] raise
+
+pub struct TfliteCpuRunnerCache {
+  entries : Map[String, TfliteCpuRunner]
+  entry_bytes : Map[String, Int]
+  last_access : Map[String, Int]
+  capacity_ : Int
+  byte_capacity_ : Int
+  mut resident_bytes_ : Int
+  mut access_counter : Int
+  mut hits_ : Int
+  mut misses_ : Int
+  mut evictions_ : Int
+}
+pub fn TfliteCpuRunnerCache::byte_capacity(Self) -> Int
+pub fn TfliteCpuRunnerCache::capacity(Self) -> Int
+pub fn TfliteCpuRunnerCache::clear(Self) -> Int
+pub fn TfliteCpuRunnerCache::length(Self) -> Int
+pub fn TfliteCpuRunnerCache::metrics(Self) -> TfliteCpuRunnerCacheMetrics
+pub fn TfliteCpuRunnerCache::new() -> Self
+pub fn TfliteCpuRunnerCache::new_with_capacity(Int) -> Self raise @tensor.TensorError
+pub fn TfliteCpuRunnerCache::new_with_limits(Int, Int) -> Self raise @tensor.TensorError
+pub fn TfliteCpuRunnerCache::resident_bytes(Self) -> Int
+pub async fn TfliteCpuRunnerCache::run(Self, Bytes, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+pub fn TfliteCpuRunnerCache::run_artifact(Self, TfliteModelArtifact, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput] raise
+
+pub struct TfliteCpuRunnerCacheMetrics {
+  hits_ : Int
+  misses_ : Int
+  evictions_ : Int
+  entries_ : Int
+  resident_bytes_ : Int
+  byte_capacity_ : Int
+}
+pub fn TfliteCpuRunnerCacheMetrics::byte_capacity(Self) -> Int
+pub fn TfliteCpuRunnerCacheMetrics::entries(Self) -> Int
+pub fn TfliteCpuRunnerCacheMetrics::evictions(Self) -> Int
+pub fn TfliteCpuRunnerCacheMetrics::hits(Self) -> Int
+pub fn TfliteCpuRunnerCacheMetrics::misses(Self) -> Int
+pub fn TfliteCpuRunnerCacheMetrics::resident_bytes(Self) -> Int
+
+pub struct TfliteModelArtifact {
+  bytes_ : Bytes
+  digest_ : String
+}
+pub fn TfliteModelArtifact::byte_length(Self) -> Int
+pub fn TfliteModelArtifact::digest(Self) -> String
+pub async fn TfliteModelArtifact::from_bytes(Bytes) -> Self
+
+pub struct TfliteRunner {
+  program : WebNNProgram
+  inputs : Array[@litert.TfliteRuntimeTensor]
+  outputs : Array[@litert.TfliteRuntimeTensor]
+}
+pub async fn TfliteRunner::compile(Bytes, @compat.DevicePreference) -> Self
+pub async fn TfliteRunner::compile_pool(Bytes, @compat.DevicePreference, Int) -> Self
+pub fn TfliteRunner::destroy(Self) -> Unit
+pub fn TfliteRunner::inputs(Self) -> Array[@litert.TfliteRuntimeTensor]
+pub fn TfliteRunner::outputs(Self) -> Array[@litert.TfliteRuntimeTensor]
+pub fn TfliteRunner::pool_size(Self) -> Int
+pub async fn TfliteRunner::run(Self, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+
+pub struct TfliteRunnerCache {
+  entries : Map[String, TfliteRunner]
+  entry_bytes : Map[String, Int]
+  last_access : Map[String, Int]
+  capacity_ : Int
+  byte_capacity_ : Int
+  generation : @ref.Ref[Int]
+  mut resident_bytes_ : Int
+  mut access_counter : Int
+  mut hits_ : Int
+  mut misses_ : Int
+  mut evictions_ : Int
+}
+pub fn TfliteRunnerCache::byte_capacity(Self) -> Int
+pub fn TfliteRunnerCache::capacity(Self) -> Int
+pub fn TfliteRunnerCache::clear(Self) -> Int
+pub fn TfliteRunnerCache::length(Self) -> Int
+pub fn TfliteRunnerCache::metrics(Self) -> TfliteRunnerCacheMetrics
+pub fn TfliteRunnerCache::new() -> Self
+pub fn TfliteRunnerCache::new_with_capacity(Int) -> Self raise @tensor.TensorError
+pub fn TfliteRunnerCache::new_with_limits(Int, Int) -> Self raise @tensor.TensorError
+pub fn TfliteRunnerCache::resident_bytes(Self) -> Int
+pub async fn TfliteRunnerCache::run(Self, Bytes, @compat.DevicePreference, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+pub async fn TfliteRunnerCache::run_artifact(Self, TfliteModelArtifact, @compat.DevicePreference, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+pub async fn TfliteRunnerCache::run_artifact_pool(Self, TfliteModelArtifact, @compat.DevicePreference, Int, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+pub async fn TfliteRunnerCache::run_artifact_pool_with_compiler(Self, TfliteModelArtifact, @compat.DevicePreference, Int, Array[TfliteRunnerInput], () -> @core.Promise[TfliteRunner]) -> Array[TfliteRunnerOutput]
+pub async fn TfliteRunnerCache::run_pool(Self, Bytes, @compat.DevicePreference, Int, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+
+pub struct TfliteRunnerCacheKey {
+  model_digest_ : String
+  device_ : @compat.DevicePreference
+  execution_pool_size_ : Int
+}
+pub fn TfliteRunnerCacheKey::canonical(Self) -> String
+pub fn TfliteRunnerCacheKey::new(String, @compat.DevicePreference, Int) -> Self raise @tensor.TensorError
+
+pub struct TfliteRunnerCacheMetrics {
+  hits_ : Int
+  misses_ : Int
+  evictions_ : Int
+  entries_ : Int
+  resident_bytes_ : Int
+  byte_capacity_ : Int
+}
+pub fn TfliteRunnerCacheMetrics::byte_capacity(Self) -> Int
+pub fn TfliteRunnerCacheMetrics::entries(Self) -> Int
+pub fn TfliteRunnerCacheMetrics::evictions(Self) -> Int
+pub fn TfliteRunnerCacheMetrics::hits(Self) -> Int
+pub fn TfliteRunnerCacheMetrics::misses(Self) -> Int
+pub fn TfliteRunnerCacheMetrics::resident_bytes(Self) -> Int
+
+pub struct TfliteRunnerInput {
+  name_ : String
+  values_ : TfliteRunnerValues
+}
+pub fn TfliteRunnerInput::float32(String, Array[Float]) -> Self raise @tensor.TensorError
+pub fn TfliteRunnerInput::name(Self) -> String
+pub fn TfliteRunnerInput::quantized(String, Array[Int]) -> Self raise @tensor.TensorError
+pub fn TfliteRunnerInput::values(Self) -> TfliteRunnerValues
+
+pub struct TfliteRunnerOutput {
+  name_ : String
+  values_ : TfliteRunnerValues
+}
+pub fn TfliteRunnerOutput::name(Self) -> String
+pub fn TfliteRunnerOutput::values(Self) -> TfliteRunnerValues
+
+pub(all) enum TfliteRunnerValues {
+  Float32(Array[Float])
+  Quantized(Array[Int])
+}
+
+pub struct WebNNCapabilities {
+  contract_ : WebNNContextContract
+  preference_ : @compat.DevicePreference
+  preferred_input_layout_ : @shape.InputLayout
+  op_support_limits_available_ : Bool
+  tensor_io_available_ : Bool
+  supported_operators_ : Array[String]
+}
+pub fn WebNNCapabilities::contract(Self) -> WebNNContextContract
+pub fn WebNNCapabilities::op_support_limits_available(Self) -> Bool
+pub fn WebNNCapabilities::preference(Self) -> @compat.DevicePreference
+pub fn WebNNCapabilities::preferred_input_layout(Self) -> @shape.InputLayout
+pub fn WebNNCapabilities::supported_operators(Self) -> Array[String]
+pub fn WebNNCapabilities::tensor_io_available(Self) -> Bool
+
+pub(all) enum WebNNContextContract {
+  Accelerated
+  LegacyDeviceType
+} derive(Eq, @debug.Debug)
+pub fn WebNNContextContract::to_string(Self) -> String
+
+pub struct WebNNExecution {
+  context : @raw.MLContext
+  graph : @raw.MLGraph
+  input_specs : Array[WebNNValueSpec]
+  inputs : Array[@raw.MLTensor]
+  output_specs : Array[WebNNValueSpec]
+  outputs : Array[@raw.MLTensor]
+}
+pub fn WebNNExecution::destroy(Self) -> Unit
+pub async fn WebNNExecution::run(Self, Array[Float]) -> Array[Float]
+pub async fn WebNNExecution::run_named(Self, Array[WebNNNamedValues]) -> Array[WebNNNamedValues]
+
+pub struct WebNNGraphBuilder {
+  context : @raw.MLContext
+  builder : @raw.MLGraphBuilder
+  supported_operators_ : Array[String]
+}
+pub async fn WebNNGraphBuilder::compile_litert_program(Self, @litert.LiteRtModel) -> WebNNProgram
+pub async fn WebNNGraphBuilder::compile_litert_program_pool(Self, @litert.LiteRtModel, Int) -> WebNNProgram
+pub async fn WebNNGraphBuilder::compile_named(Self, Array[WebNNInput], Array[WebNNOutput]) -> WebNNSession
+pub async fn WebNNGraphBuilder::compile_program_named(Self, Array[WebNNInput], Array[WebNNOutput]) -> WebNNProgram
+pub async fn WebNNGraphBuilder::compile_program_pool_named(Self, Array[WebNNInput], Array[WebNNOutput], Int) -> WebNNProgram
+pub async fn WebNNGraphBuilder::compile_program_pool_single(Self, WebNNInput, String, WebNNTensor, Int) -> WebNNProgram
+pub async fn WebNNGraphBuilder::compile_program_single(Self, WebNNInput, String, WebNNTensor) -> WebNNProgram
+pub async fn WebNNGraphBuilder::compile_single(Self, WebNNInput, String, WebNNTensor) -> WebNNSession
+pub fn WebNNGraphBuilder::constant(Self, @shape.Shape, Array[Float]) -> WebNNTensor raise @tensor.TensorError
+pub fn WebNNGraphBuilder::destroy(Self) -> Unit
+pub fn WebNNGraphBuilder::input(Self, String, @shape.Shape) -> WebNNInput raise @tensor.TensorError
+pub fn WebNNGraphBuilder::lower_litert(Self, @litert.LiteRtModel) -> WebNNLoweredLiteRtGraph raise
+pub fn WebNNGraphBuilder::materialize_bert_encoder_stack(Self, @model.BertEncoderConfig, @model.BertEncoderParameters, @model.AttentionMask?) -> @model.BertEncoderStack[WebNNTensor] raise @tensor.TensorError
+pub fn WebNNGraphBuilder::materialize_feed_forward(Self, @model.TransformerEncoderConfig, @model.FeedForwardParameters) -> @model.FeedForward[WebNNTensor] raise @tensor.TensorError
+pub fn WebNNGraphBuilder::materialize_self_attention(Self, @model.SelfAttentionConfig, @model.SelfAttentionParameters, @model.AttentionMask?) -> @model.SelfAttention[WebNNTensor] raise @tensor.TensorError
+pub fn WebNNGraphBuilder::materialize_transformer_encoder(Self, @model.TransformerEncoderConfig, @model.TransformerEncoderParameters, @model.AttentionMask?) -> @model.TransformerEncoderBlock[WebNNTensor] raise @tensor.TensorError
+pub fn WebNNGraphBuilder::materialize_transformer_encoder_stack(Self, @model.TransformerEncoderStackConfig, @model.TransformerEncoderStackParameters, @model.AttentionMask?) -> @model.TransformerEncoderStack[WebNNTensor] raise @tensor.TensorError
+pub async fn WebNNGraphBuilder::new(@compat.DevicePreference) -> Self
+pub fn WebNNGraphBuilder::output(Self, String, WebNNTensor) -> WebNNOutput raise @tensor.TensorError
+pub fn WebNNGraphBuilder::preferred_input_layout(Self) -> @shape.InputLayout
+pub fn WebNNGraphBuilder::supported_operators(Self) -> Array[String]
+
+pub struct WebNNInput {
+  name_ : String
+  tensor_ : WebNNTensor
+}
+pub fn WebNNInput::tensor(Self) -> WebNNTensor
+
+pub(all) struct WebNNLoweredLiteRtGraph {
+  inputs_ : Array[WebNNInput]
+  outputs_ : Array[@litert.LiteRtLoweredValue[WebNNTensor]]
+}
+pub fn WebNNLoweredLiteRtGraph::inputs(Self) -> Array[WebNNInput]
+pub fn WebNNLoweredLiteRtGraph::outputs(Self) -> Array[@litert.LiteRtLoweredValue[WebNNTensor]]
+
+pub struct WebNNNamedValues {
+  name_ : String
+  values_ : Array[Float]
+}
+pub fn WebNNNamedValues::name(Self) -> String
+pub fn WebNNNamedValues::new(String, Array[Float]) -> Self raise @tensor.TensorError
+pub fn WebNNNamedValues::values(Self) -> Array[Float]
+
+pub struct WebNNOutput {
+  name_ : String
+  tensor_ : WebNNTensor
+}
+
+pub struct WebNNProgram {
+  owner : WebNNGraphBuilder
+  executions : Array[WebNNExecution]
+  scheduler : WebNNProgramScheduler
+}
+pub fn WebNNProgram::destroy(Self) -> Unit
+pub fn WebNNProgram::maximum_concurrency(Self) -> Int
+pub fn WebNNProgram::pool_size(Self) -> Int
+pub async fn WebNNProgram::run(Self, Array[Float]) -> Array[Float]
+pub async fn WebNNProgram::run_named(Self, Array[WebNNNamedValues]) -> Array[WebNNNamedValues]
+
+pub struct WebNNProgramCache {
+  entries : Map[String, WebNNProgram]
+  generation : @ref.Ref[Int]
+}
+pub fn WebNNProgramCache::clear(Self) -> Int
+pub fn WebNNProgramCache::length(Self) -> Int
+pub fn WebNNProgramCache::new() -> Self
+pub async fn WebNNProgramCache::run_named_or_compile(Self, WebNNProgramCacheKey, Array[WebNNNamedValues], () -> @core.Promise[WebNNProgram]) -> (Array[WebNNNamedValues], Bool)
+pub async fn WebNNProgramCache::run_or_compile(Self, WebNNProgramCacheKey, Array[Float], () -> @core.Promise[WebNNProgram]) -> (Array[Float], Bool)
+
+pub struct WebNNProgramCacheKey {
+  graph_hash_ : String
+  device_ : @compat.DevicePreference
+  input_shapes_ : Array[@shape.Shape]
+  execution_pool_size_ : Int
+}
+pub fn WebNNProgramCacheKey::canonical(Self) -> String
+pub fn WebNNProgramCacheKey::new(String, @compat.DevicePreference, Array[@shape.Shape]) -> Self raise @tensor.TensorError
+pub fn WebNNProgramCacheKey::new_with_pool(String, @compat.DevicePreference, Array[@shape.Shape], Int) -> Self raise @tensor.TensorError
+
+type WebNNProgramScheduler
+
+pub struct WebNNRuntime {
+  preference_ : @compat.DevicePreference
+  execution_pool_size_ : Int
+  fallback_ : WebNNRuntimeFallback
+  tflite_cache : TfliteRunnerCache
+  cpu_tflite_cache : TfliteCpuRunnerCache
+  mut cpu_fallbacks_ : Int
+}
+pub fn WebNNRuntime::cache_byte_capacity(Self) -> Int
+pub fn WebNNRuntime::cache_capacity(Self) -> Int
+pub fn WebNNRuntime::cache_resident_bytes(Self) -> Int
+pub fn WebNNRuntime::cache_size(Self) -> Int
+pub fn WebNNRuntime::clear(Self) -> Int
+pub fn WebNNRuntime::cpu_cache_byte_capacity(Self) -> Int
+pub fn WebNNRuntime::cpu_cache_capacity(Self) -> Int
+pub fn WebNNRuntime::cpu_cache_resident_bytes(Self) -> Int
+pub fn WebNNRuntime::cpu_cache_size(Self) -> Int
+pub fn WebNNRuntime::execution_pool_size(Self) -> Int
+pub fn WebNNRuntime::fallback(Self) -> WebNNRuntimeFallback
+pub fn WebNNRuntime::metrics(Self) -> WebNNRuntimeMetrics
+pub fn WebNNRuntime::new(@compat.DevicePreference) -> Self
+pub fn WebNNRuntime::new_with_cache_limits(@compat.DevicePreference, Int, Int, Int, Int, Int, WebNNRuntimeFallback) -> Self raise @tensor.TensorError
+pub fn WebNNRuntime::new_with_cpu_fallback(@compat.DevicePreference, Int, Int) -> Self raise @tensor.TensorError
+pub fn WebNNRuntime::new_with_options(@compat.DevicePreference, Int, Int, WebNNRuntimeFallback) -> Self raise @tensor.TensorError
+pub fn WebNNRuntime::new_with_pool(@compat.DevicePreference, Int) -> Self raise @tensor.TensorError
+pub fn WebNNRuntime::preference(Self) -> @compat.DevicePreference
+pub async fn WebNNRuntime::run_prepared_tflite(Self, TfliteModelArtifact, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+pub async fn WebNNRuntime::run_tflite(Self, Bytes, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
+
+pub(all) enum WebNNRuntimeFallback {
+  Disabled
+  Cpu
+}
+
+pub struct WebNNRuntimeMetrics {
+  cache_ : TfliteRunnerCacheMetrics
+  cpu_cache_ : TfliteCpuRunnerCacheMetrics
+  cpu_fallbacks_ : Int
+}
+pub fn WebNNRuntimeMetrics::byte_capacity(Self) -> Int
+pub fn WebNNRuntimeMetrics::cpu_cache_byte_capacity(Self) -> Int
+pub fn WebNNRuntimeMetrics::cpu_cache_entries(Self) -> Int
+pub fn WebNNRuntimeMetrics::cpu_cache_evictions(Self) -> Int
+pub fn WebNNRuntimeMetrics::cpu_cache_hits(Self) -> Int
+pub fn WebNNRuntimeMetrics::cpu_cache_misses(Self) -> Int
+pub fn WebNNRuntimeMetrics::cpu_cache_resident_bytes(Self) -> Int
+pub fn WebNNRuntimeMetrics::cpu_fallbacks(Self) -> Int
+pub fn WebNNRuntimeMetrics::entries(Self) -> Int
+pub fn WebNNRuntimeMetrics::evictions(Self) -> Int
+pub fn WebNNRuntimeMetrics::hits(Self) -> Int
+pub fn WebNNRuntimeMetrics::misses(Self) -> Int
+pub fn WebNNRuntimeMetrics::resident_bytes(Self) -> Int
+
+pub struct WebNNSession {
+  context : @raw.MLContext
+  graph : @raw.MLGraph
+  input_specs : Array[WebNNValueSpec]
+  output_specs : Array[WebNNValueSpec]
+}
+pub async fn WebNNSession::prepare(Self) -> WebNNExecution
+pub async fn WebNNSession::run(Self, Array[Float]) -> Array[Float]
+pub async fn WebNNSession::run_named(Self, Array[WebNNNamedValues]) -> Array[WebNNNamedValues]
+
+pub struct WebNNTensor {
+  builder : @raw.MLGraphBuilder
+  operand : @raw.MLOperand
+  shape_ : @shape.Shape
+  supported_operators : Array[String]
+}
+pub impl @tensor.TensorOps for WebNNTensor
+
+type WebNNValueSpec
+
+// Type aliases
+
+// Traits

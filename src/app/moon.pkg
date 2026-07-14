@@ -1,0 +1,18 @@
+import {
+  "mizchi/js",
+  "mizchi/js/core",
+  "mizchi/webnn/backend/cpu",
+  "mizchi/webnn/backend/webnn",
+  "mizchi/webnn/benchmark" @bench,
+  "mizchi/webnn/bert",
+  "mizchi/webnn/litert",
+  "mizchi/webnn/model",
+  "mizchi/webnn/mnist",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+  "mizchi/webnn/webnn/compat",
+}
+
+supported_targets = "js"
+
+pkgtype(kind: "executable")

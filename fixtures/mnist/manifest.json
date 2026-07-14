@@ -1,0 +1,26 @@
+{
+  "formatVersion": 1,
+  "count": 100,
+  "rows": 28,
+  "columns": 28,
+  "inputSize": 784,
+  "hiddenSize": 128,
+  "outputSize": 10,
+  "files": {
+    "weights": {
+      "name": "mlp_784_128_10.bin",
+      "bytes": 407080,
+      "sha256": "1f8c4f957e8f71e545f06d64ddf1a132202229e24c374e9ce6bc426f5a396424"
+    },
+    "images": {
+      "name": "t10k-images-idx3-ubyte",
+      "bytes": 78416,
+      "sha256": "806da1c8626ed91a2ec572ed80666121226e1de20cec504c2787812cac71d159"
+    },
+    "labels": {
+      "name": "t10k-labels-idx1-ubyte",
+      "bytes": 108,
+      "sha256": "1a053e1de7d8946ac62b3ae5a196d52d2e96bc66fd695815a7e29f0310f9c031"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+}
+
+import {
+  "mizchi/webnn/backend/cpu",
+  "moonbitlang/core/test",
+} for "wbtest"
+
+supported_targets = "js"

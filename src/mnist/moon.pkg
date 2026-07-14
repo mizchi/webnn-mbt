@@ -1,0 +1,12 @@
+import {
+  "mizchi/js",
+  "mizchi/js/core",
+  "mizchi/webnn/backend/cpu",
+  "mizchi/webnn/backend/webnn",
+  "mizchi/webnn/model",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+  "mizchi/webnn/webnn/compat",
+}
+
+supported_targets = "js"

@@ -1,0 +1,5 @@
+import {
+  "mizchi/webnn/shape",
+}
+
+supported_targets = "js"

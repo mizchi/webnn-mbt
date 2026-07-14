@@ -1,0 +1,39 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/mnist"
+
+import {
+  "mizchi/js/core",
+  "mizchi/webnn/model",
+  "mizchi/webnn/tensor",
+}
+
+// Values
+pub async fn benchmark(Int, Int, Int) -> @core.Any
+
+pub async fn benchmark_cache(Int, Int, Int) -> @core.Any
+
+pub async fn benchmark_pool(Int, Int, Int, Int) -> @core.Any
+
+pub fn clear_program_cache() -> Int
+
+pub async fn evaluate(Int) -> @core.Any
+
+pub async fn load_fixture() -> Fixture
+
+pub async fn run_cached(Int) -> @core.Any
+
+// Errors
+
+// Types and methods
+pub(all) struct Fixture {
+  params : @model.MlpParams
+  count : Int
+  images : Array[Float]
+  labels : Array[Int]
+}
+pub fn Fixture::expected_labels(Self, Int) -> Array[Int] raise @tensor.TensorError
+pub fn Fixture::inputs(Self, Int) -> Array[Float] raise @tensor.TensorError
+
+// Type aliases
+
+// Traits

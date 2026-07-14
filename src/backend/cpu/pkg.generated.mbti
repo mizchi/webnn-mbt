@@ -1,0 +1,34 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/backend/cpu"
+
+import {
+  "mizchi/webnn/model",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+}
+
+// Values
+pub fn materialize_bert_encoder_stack(@model.BertEncoderConfig, @model.BertEncoderParameters, @model.AttentionMask?) -> @model.BertEncoderStack[CpuTensor] raise @tensor.TensorError
+
+pub fn materialize_feed_forward(@model.TransformerEncoderConfig, @model.FeedForwardParameters) -> @model.FeedForward[CpuTensor] raise @tensor.TensorError
+
+pub fn materialize_self_attention(@model.SelfAttentionConfig, @model.SelfAttentionParameters, @model.AttentionMask?) -> @model.SelfAttention[CpuTensor] raise @tensor.TensorError
+
+pub fn materialize_transformer_encoder(@model.TransformerEncoderConfig, @model.TransformerEncoderParameters, @model.AttentionMask?) -> @model.TransformerEncoderBlock[CpuTensor] raise @tensor.TensorError
+
+pub fn materialize_transformer_encoder_stack(@model.TransformerEncoderStackConfig, @model.TransformerEncoderStackParameters, @model.AttentionMask?) -> @model.TransformerEncoderStack[CpuTensor] raise @tensor.TensorError
+
+// Errors
+
+// Types and methods
+pub struct CpuTensor {
+  shape_ : @shape.Shape
+  values_ : Array[Float]
+}
+pub fn CpuTensor::new(@shape.Shape, Array[Float]) -> Self raise @tensor.TensorError
+pub fn CpuTensor::values(Self) -> Array[Float]
+pub impl @tensor.TensorOps for CpuTensor
+
+// Type aliases
+
+// Traits

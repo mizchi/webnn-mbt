@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/bert"
+
+import {
+  "mizchi/webnn/model",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+}
+
+// Values
+pub fn load_hugging_face_encoder(@model.BertEncoderConfig, Array[NamedTensor], String) -> @model.BertEncoderParameters raise @tensor.TensorError
+
+pub fn parse_safetensors(Bytes) -> Array[NamedTensor] raise @tensor.TensorError
+
+pub fn tiny_hugging_face_encoder_tensors(@model.BertEncoderConfig, String) -> Array[NamedTensor] raise @tensor.TensorError
+
+// Errors
+
+// Types and methods
+pub struct NamedTensor {
+  name_ : String
+  shape_ : @shape.Shape
+  values_ : Array[Float]
+}
+pub fn NamedTensor::name(Self) -> String
+pub fn NamedTensor::new(String, @shape.Shape, Array[Float]) -> Self raise @tensor.TensorError
+pub fn NamedTensor::shape(Self) -> @shape.Shape
+pub fn NamedTensor::values(Self) -> Array[Float]
+
+// Type aliases
+
+// Traits

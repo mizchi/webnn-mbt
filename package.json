@@ -1,0 +1,22 @@
+{
+  "name": "webnn-mbt",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "moon build --target js --release",
+    "bench": "pnpm run build && node scripts/bench.mjs",
+    "bench:mnist": "pnpm run build && node scripts/bench-mnist.mjs",
+    "prepare:mnist": "node scripts/prepare-mnist-fixture.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test:ci-config": "node --test tests/ci/*.test.mjs",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1"
+  }
+}

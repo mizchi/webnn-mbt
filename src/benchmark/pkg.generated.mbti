@@ -1,0 +1,48 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/benchmark"
+
+import {
+  "mizchi/js/core",
+  "mizchi/webnn/shape",
+}
+
+// Values
+pub async fn bert_encoder(Int, Int, Int, Int, Int, String, Int, Int) -> @core.Any
+
+pub async fn litert_linear(Int, Int) -> @core.Any
+
+pub async fn matmul(Int, Int, Int) -> @core.Any
+
+pub async fn named_io(Int, Int, Int) -> @core.Any
+
+pub async fn self_attention(Int, Int, Int, String, Int, Int) -> @core.Any
+
+pub async fn tflite_depthwise_conv2d(Int, Int) -> @core.Any
+
+pub async fn tflite_fully_connected(Int, Int) -> @core.Any
+
+pub async fn tflite_max_pool2d(Int, Int) -> @core.Any
+
+pub async fn tflite_per_axis_int8_raw(Int, Int) -> @core.Any
+
+pub async fn tflite_runner_cache_per_axis_int8_raw(Int, Int) -> @core.Any
+
+pub async fn tflite_sub(Int, Int) -> @core.Any
+
+pub async fn tiny_cnn(Int, Int, Int) -> @core.Any
+
+pub async fn tiny_cnn_with_layout(Int, Int, Int, @shape.InputLayout) -> @core.Any
+
+pub async fn transformer_block(Int, Int, Int, Int) -> @core.Any
+
+pub async fn transformer_encoder(Int, Int, Int, Int, String, Int, Int) -> @core.Any
+
+pub async fn transformer_encoder_stack(Int, Int, Int, Int, Int, String, Int, Int) -> @core.Any
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

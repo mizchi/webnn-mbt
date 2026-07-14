@@ -1,0 +1,87 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/shape"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+pub suberror ShapeError {
+  ShapeError(String)
+}
+pub fn ShapeError::to_string(Self) -> String
+
+// Types and methods
+pub(all) enum Conv2dFilterLayout {
+  Oihw
+  Hwio
+} derive(Eq, @debug.Debug)
+pub fn Conv2dFilterLayout::to_webnn_string(Self) -> String
+
+pub struct Conv2dOptions {
+  padding_ : Array[Int]
+  strides_ : Array[Int]
+  dilations_ : Array[Int]
+  groups_ : Int
+  input_layout_ : InputLayout
+  filter_layout_ : Conv2dFilterLayout
+}
+pub fn Conv2dOptions::default() -> Self
+pub fn Conv2dOptions::dilations(Self) -> Array[Int]
+pub fn Conv2dOptions::filter_layout(Self) -> Conv2dFilterLayout
+pub fn Conv2dOptions::groups(Self) -> Int
+pub fn Conv2dOptions::input_layout(Self) -> InputLayout
+pub fn Conv2dOptions::new(Array[Int], Array[Int], Array[Int], Int) -> Self raise ShapeError
+pub fn Conv2dOptions::new_with_layout(Array[Int], Array[Int], Array[Int], Int, InputLayout, Conv2dFilterLayout) -> Self raise ShapeError
+pub fn Conv2dOptions::padding(Self) -> Array[Int]
+pub fn Conv2dOptions::strides(Self) -> Array[Int]
+
+pub(all) enum InputLayout {
+  Nchw
+  Nhwc
+} derive(Eq, @debug.Debug)
+pub fn InputLayout::to_webnn_string(Self) -> String
+
+pub struct Pool2dOptions {
+  window_dimensions_ : Array[Int]
+  padding_ : Array[Int]
+  strides_ : Array[Int]
+  dilations_ : Array[Int]
+  input_layout_ : InputLayout
+}
+pub fn Pool2dOptions::dilations(Self) -> Array[Int]
+pub fn Pool2dOptions::input_layout(Self) -> InputLayout
+pub fn Pool2dOptions::new(Array[Int], Array[Int], Array[Int], Array[Int]) -> Self raise ShapeError
+pub fn Pool2dOptions::new_with_layout(Array[Int], Array[Int], Array[Int], Array[Int], InputLayout) -> Self raise ShapeError
+pub fn Pool2dOptions::padding(Self) -> Array[Int]
+pub fn Pool2dOptions::strides(Self) -> Array[Int]
+pub fn Pool2dOptions::window_dimensions(Self) -> Array[Int]
+
+pub(all) struct Shape {
+  dimensions_ : Array[Int]
+}
+pub fn Shape::broadcast(Self, Self) -> Self raise ShapeError
+pub fn Shape::concat(Self, Self, Int) -> Self raise ShapeError
+pub fn Shape::conv2d(Self, Self, Conv2dOptions) -> Self raise ShapeError
+pub fn Shape::conv2d_nchw_oihw(Self, Self, Conv2dOptions) -> Self raise ShapeError
+pub fn Shape::dimension(Self, Int) -> Int
+pub fn Shape::dimensions(Self) -> Array[Int]
+pub fn Shape::element_count(Self) -> Int
+pub fn Shape::gather(Self, Self, Int) -> Self raise ShapeError
+pub fn Shape::layer_normalization(Self, Self, Self, Array[Int], Float) -> Self raise ShapeError
+pub fn Shape::matmul(Self, Self) -> Self raise ShapeError
+pub fn Shape::new(Array[Int]) -> Self raise ShapeError
+pub fn Shape::pool2d(Self, Pool2dOptions) -> Self raise ShapeError
+pub fn Shape::rank(Self) -> Int
+pub fn Shape::reduce(Self, Array[Int], Bool) -> Self raise ShapeError
+pub fn Shape::same_as(Self, Self) -> Bool
+pub fn Shape::slice(Self, Array[Int], Array[Int]) -> Self raise ShapeError
+pub fn Shape::to_string(Self) -> String
+pub fn Shape::transpose(Self, Array[Int]) -> Self raise ShapeError
+pub fn Shape::validate_axis(Self, Int) -> Unit raise ShapeError
+
+// Type aliases
+
+// Traits

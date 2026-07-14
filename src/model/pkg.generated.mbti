@@ -1,0 +1,240 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/model"
+
+import {
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct AttentionMask {
+  shape_ : @shape.Shape
+  values_ : Array[Float]
+}
+pub fn AttentionMask::additive(@shape.Shape, Array[Float]) -> Self raise @tensor.TensorError
+pub fn AttentionMask::batched_causal_padding(Array[Array[Bool]], Float) -> Self raise @tensor.TensorError
+pub fn AttentionMask::batched_padding(Array[Array[Bool]], Float) -> Self raise @tensor.TensorError
+pub fn AttentionMask::causal(Int, Float) -> Self raise @tensor.TensorError
+pub fn AttentionMask::causal_padding(Array[Bool], Float) -> Self raise @tensor.TensorError
+pub fn AttentionMask::padding(Array[Bool], Float) -> Self raise @tensor.TensorError
+pub fn AttentionMask::shape(Self) -> @shape.Shape
+pub fn AttentionMask::values(Self) -> Array[Float]
+
+pub(all) struct BertEncoderBlock[T] {
+  attention : SelfAttention[T]
+  attention_output_normalization : LayerNorm[T]
+  feed_forward : FeedForward[T]
+  output_normalization : LayerNorm[T]
+}
+pub fn[T : @tensor.TensorOps] BertEncoderBlock::forward(Self[T], T) -> T raise
+
+pub struct BertEncoderConfig {
+  encoder_ : TransformerEncoderConfig
+  layers_ : Int
+}
+pub fn BertEncoderConfig::encoder(Self) -> TransformerEncoderConfig
+pub fn BertEncoderConfig::heads(Self) -> Int
+pub fn BertEncoderConfig::intermediate_size(Self) -> Int
+pub fn BertEncoderConfig::layers(Self) -> Int
+pub fn BertEncoderConfig::new(Int, Int, Int, Int, Int, Float) -> Self raise @tensor.TensorError
+pub fn BertEncoderConfig::width(Self) -> Int
+
+pub struct BertEncoderParameters {
+  layers_ : Array[TransformerEncoderParameters]
+}
+pub fn BertEncoderParameters::layers(Self) -> Array[TransformerEncoderParameters]
+pub fn BertEncoderParameters::new(BertEncoderConfig, Array[TransformerEncoderParameters]) -> Self raise @tensor.TensorError
+
+pub struct BertEncoderStack[T] {
+  layers_ : Array[BertEncoderBlock[T]]
+}
+pub fn[T : @tensor.TensorOps] BertEncoderStack::forward(Self[T], T) -> T raise
+pub fn[T] BertEncoderStack::layer_count(Self[T]) -> Int
+pub fn[T] BertEncoderStack::new(Array[BertEncoderBlock[T]]) -> Self[T] raise @tensor.TensorError
+
+pub(all) struct Conv2dLayer[T] {
+  weight : T
+  bias : T
+  options : @shape.Conv2dOptions
+}
+pub fn[T : @tensor.TensorOps] Conv2dLayer::forward(Self[T], T) -> T raise
+
+pub(all) struct FeedForward[T] {
+  input_projection : Linear[T]
+  output_projection : Linear[T]
+}
+pub fn[T : @tensor.TensorOps] FeedForward::forward(Self[T], T) -> T raise
+
+pub struct FeedForwardParameters {
+  width_ : Int
+  hidden_size_ : Int
+  input_weight_ : Array[Float]
+  input_bias_ : Array[Float]
+  output_weight_ : Array[Float]
+  output_bias_ : Array[Float]
+}
+pub fn FeedForwardParameters::input_bias(Self) -> Array[Float]
+pub fn FeedForwardParameters::input_weight(Self) -> Array[Float]
+pub fn FeedForwardParameters::matches(Self, TransformerEncoderConfig) -> Bool
+pub fn FeedForwardParameters::new(TransformerEncoderConfig, Array[Float], Array[Float], Array[Float], Array[Float]) -> Self raise @tensor.TensorError
+pub fn FeedForwardParameters::output_bias(Self) -> Array[Float]
+pub fn FeedForwardParameters::output_weight(Self) -> Array[Float]
+
+pub(all) struct LayerNorm[T] {
+  scale : T
+  bias : T
+  axes : Array[Int]
+  epsilon : Float
+}
+pub fn[T : @tensor.TensorOps] LayerNorm::forward(Self[T], T) -> T raise
+
+pub(all) struct Linear[T] {
+  weight : T
+  bias : T
+}
+pub fn[T : @tensor.TensorOps] Linear::forward(Self[T], T) -> T raise
+
+pub(all) struct Mlp[T] {
+  hidden : Linear[T]
+  output : Linear[T]
+}
+pub fn[T : @tensor.TensorOps] Mlp::forward(Self[T], T) -> T raise
+
+pub(all) struct MlpParams {
+  weight1 : Array[Float]
+  bias1 : Array[Float]
+  weight2 : Array[Float]
+  bias2 : Array[Float]
+}
+
+pub(all) struct SelfAttention[T] {
+  query : Linear[T]
+  key : Linear[T]
+  value : Linear[T]
+  output : Linear[T]
+  score_scale : T
+  additive_mask : T?
+  heads : Int
+}
+pub fn[T : @tensor.TensorOps] SelfAttention::forward(Self[T], T) -> T raise
+
+pub struct SelfAttentionConfig {
+  width_ : Int
+  heads_ : Int
+}
+pub fn SelfAttentionConfig::head_size(Self) -> Int
+pub fn SelfAttentionConfig::heads(Self) -> Int
+pub fn SelfAttentionConfig::new(Int, Int) -> Self raise @tensor.TensorError
+pub fn SelfAttentionConfig::score_scale(Self) -> Float
+pub fn SelfAttentionConfig::width(Self) -> Int
+
+pub struct SelfAttentionParameters {
+  width_ : Int
+  heads_ : Int
+  query_weight_ : Array[Float]
+  query_bias_ : Array[Float]
+  key_weight_ : Array[Float]
+  key_bias_ : Array[Float]
+  value_weight_ : Array[Float]
+  value_bias_ : Array[Float]
+  output_weight_ : Array[Float]
+  output_bias_ : Array[Float]
+}
+pub fn SelfAttentionParameters::key_bias(Self) -> Array[Float]
+pub fn SelfAttentionParameters::key_weight(Self) -> Array[Float]
+pub fn SelfAttentionParameters::matches(Self, SelfAttentionConfig) -> Bool
+pub fn SelfAttentionParameters::new(SelfAttentionConfig, Array[Float], Array[Float], Array[Float], Array[Float], Array[Float], Array[Float], Array[Float], Array[Float]) -> Self raise @tensor.TensorError
+pub fn SelfAttentionParameters::output_bias(Self) -> Array[Float]
+pub fn SelfAttentionParameters::output_weight(Self) -> Array[Float]
+pub fn SelfAttentionParameters::query_bias(Self) -> Array[Float]
+pub fn SelfAttentionParameters::query_weight(Self) -> Array[Float]
+pub fn SelfAttentionParameters::value_bias(Self) -> Array[Float]
+pub fn SelfAttentionParameters::value_weight(Self) -> Array[Float]
+
+pub(all) struct TinyCnn[T] {
+  convolution : Conv2dLayer[T]
+  classifier : Linear[T]
+}
+pub fn[T : @tensor.TensorOps] TinyCnn::forward(Self[T], T) -> T raise
+
+pub(all) struct TransformerBlock[T] {
+  input_projection : Linear[T]
+  normalization_scale : T
+  normalization_bias : T
+  output_projection : Linear[T]
+  normalization_axes : Array[Int]
+  epsilon : Float
+}
+pub fn[T : @tensor.TensorOps] TransformerBlock::forward(Self[T], T) -> T raise
+
+pub(all) struct TransformerEncoderBlock[T] {
+  attention_normalization : LayerNorm[T]
+  attention : SelfAttention[T]
+  feed_forward_normalization : LayerNorm[T]
+  feed_forward : FeedForward[T]
+}
+pub fn[T : @tensor.TensorOps] TransformerEncoderBlock::forward(Self[T], T) -> T raise
+
+pub struct TransformerEncoderConfig {
+  attention_ : SelfAttentionConfig
+  hidden_size_ : Int
+  input_rank_ : Int
+  epsilon_ : Float
+}
+pub fn TransformerEncoderConfig::attention(Self) -> SelfAttentionConfig
+pub fn TransformerEncoderConfig::epsilon(Self) -> Float
+pub fn TransformerEncoderConfig::heads(Self) -> Int
+pub fn TransformerEncoderConfig::hidden_size(Self) -> Int
+pub fn TransformerEncoderConfig::input_rank(Self) -> Int
+pub fn TransformerEncoderConfig::new(Int, Int, Int, Int, Float) -> Self raise @tensor.TensorError
+pub fn TransformerEncoderConfig::normalization_axis(Self) -> Int
+pub fn TransformerEncoderConfig::width(Self) -> Int
+
+pub struct TransformerEncoderParameters {
+  width_ : Int
+  heads_ : Int
+  hidden_size_ : Int
+  attention_normalization_scale_ : Array[Float]
+  attention_normalization_bias_ : Array[Float]
+  attention_ : SelfAttentionParameters
+  feed_forward_normalization_scale_ : Array[Float]
+  feed_forward_normalization_bias_ : Array[Float]
+  feed_forward_ : FeedForwardParameters
+}
+pub fn TransformerEncoderParameters::attention(Self) -> SelfAttentionParameters
+pub fn TransformerEncoderParameters::attention_normalization_bias(Self) -> Array[Float]
+pub fn TransformerEncoderParameters::attention_normalization_scale(Self) -> Array[Float]
+pub fn TransformerEncoderParameters::feed_forward(Self) -> FeedForwardParameters
+pub fn TransformerEncoderParameters::feed_forward_normalization_bias(Self) -> Array[Float]
+pub fn TransformerEncoderParameters::feed_forward_normalization_scale(Self) -> Array[Float]
+pub fn TransformerEncoderParameters::matches(Self, TransformerEncoderConfig) -> Bool
+pub fn TransformerEncoderParameters::new(TransformerEncoderConfig, Array[Float], Array[Float], SelfAttentionParameters, Array[Float], Array[Float], FeedForwardParameters) -> Self raise @tensor.TensorError
+
+pub struct TransformerEncoderStack[T] {
+  layers_ : Array[TransformerEncoderBlock[T]]
+}
+pub fn[T : @tensor.TensorOps] TransformerEncoderStack::forward(Self[T], T) -> T raise
+pub fn[T] TransformerEncoderStack::layer_count(Self[T]) -> Int
+pub fn[T] TransformerEncoderStack::new(Array[TransformerEncoderBlock[T]]) -> Self[T] raise @tensor.TensorError
+
+pub struct TransformerEncoderStackConfig {
+  encoder_ : TransformerEncoderConfig
+  layers_ : Int
+}
+pub fn TransformerEncoderStackConfig::encoder(Self) -> TransformerEncoderConfig
+pub fn TransformerEncoderStackConfig::layers(Self) -> Int
+pub fn TransformerEncoderStackConfig::new(Int, Int, Int, Int, Int, Float) -> Self raise @tensor.TensorError
+
+pub struct TransformerEncoderStackParameters {
+  layers_ : Array[TransformerEncoderParameters]
+}
+pub fn TransformerEncoderStackParameters::layers(Self) -> Array[TransformerEncoderParameters]
+pub fn TransformerEncoderStackParameters::new(TransformerEncoderStackConfig, Array[TransformerEncoderParameters]) -> Self raise @tensor.TensorError
+
+// Type aliases
+
+// Traits

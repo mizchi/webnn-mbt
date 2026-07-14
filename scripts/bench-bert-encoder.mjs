@@ -1,0 +1,116 @@
+import { fixed, percentile, withCanaryPage } from "./canary-harness.mjs";
+
+const port = Number(process.env.BENCH_PORT ?? 4187);
+const layers = (process.env.BENCH_LAYERS ?? "1,2,4")
+  .split(",")
+  .map(Number)
+  .filter((count) => Number.isInteger(count) && count > 0);
+const batchSize = Number(process.env.BENCH_BATCH_SIZE ?? 2);
+const tokens = Number(process.env.BENCH_TOKENS ?? 16);
+const width = Number(process.env.BENCH_WIDTH ?? 64);
+const heads = Number(process.env.BENCH_HEADS ?? 4);
+const mask = process.env.BENCH_MASK ?? "padding";
+const warmup = Number(process.env.BENCH_WARMUP ?? 10);
+const iterations = Number(process.env.BENCH_ITERATIONS ?? 30);
+const supportedMasks = new Set([
+  "none",
+  "causal",
+  "padding",
+  "causal-padding",
+]);
+
+if (layers.length === 0 || layers.some((count) => count > 16)) {
+  throw new Error("BENCH_LAYERS must contain integers between 1 and 16");
+}
+if (!Number.isInteger(batchSize) || batchSize <= 0) {
+  throw new Error("BENCH_BATCH_SIZE must be a positive integer");
+}
+if (!Number.isInteger(tokens) || tokens <= 0) {
+  throw new Error("BENCH_TOKENS must be a positive integer");
+}
+if (!Number.isInteger(width) || width <= 0) {
+  throw new Error("BENCH_WIDTH must be a positive integer");
+}
+if (!Number.isInteger(heads) || heads <= 0 || width % heads !== 0) {
+  throw new Error("BENCH_HEADS must be positive and divide BENCH_WIDTH");
+}
+if (!supportedMasks.has(mask)) {
+  throw new Error(
+    "BENCH_MASK must be none, causal, padding, or causal-padding",
+  );
+}
+if (!Number.isInteger(warmup) || warmup < 0) {
+  throw new Error("BENCH_WARMUP must be a non-negative integer");
+}
+if (!Number.isInteger(iterations) || iterations <= 0) {
+  throw new Error("BENCH_ITERATIONS must be a positive integer");
+}
+
+await withCanaryPage({ port }, async ({ page, browserVersion }) => {
+  await page.waitForFunction(
+    () =>
+      typeof globalThis.webnnPlayground?.benchmarkBertEncoder === "function",
+  );
+  const reports = [];
+  for (const layerCount of layers) {
+    reports.push(
+      await page.evaluate(
+        ([
+          count,
+          batch,
+          tokenCount,
+          modelWidth,
+          headCount,
+          maskMode,
+          warmupCount,
+          iterationCount,
+        ]) =>
+          globalThis.webnnPlayground.benchmarkBertEncoder(
+            count,
+            batch,
+            tokenCount,
+            modelWidth,
+            headCount,
+            maskMode,
+            warmupCount,
+            iterationCount,
+          ),
+        [
+          layerCount,
+          batchSize,
+          tokens,
+          width,
+          heads,
+          mask,
+          warmup,
+          iterations,
+        ],
+      ),
+    );
+  }
+
+  console.log(
+    `\nChrome ${browserVersion} Canary headless / BERT post-norm encoder / ` +
+      `batch=${batchSize} tokens=${tokens} width=${width} heads=${heads} ` +
+      `mask=${mask} WebNN npu / warmup=${warmup} iterations=${iterations}`,
+  );
+  console.log(
+    "| layers | tensors | CPU p50 ms | WebNN p50 ms | WebNN p95 ms | speedup | load ms | context ms | graph ms | compile ms | prepare ms | max error |",
+  );
+  console.log(
+    "| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+  );
+  for (const report of reports) {
+    const cpuP50 = percentile(report.cpuSamplesMs, 0.5);
+    const webnnP50 = percentile(report.webnnSamplesMs, 0.5);
+    const webnnP95 = percentile(report.webnnSamplesMs, 0.95);
+    console.log(
+      `| ${report.layers} | ${report.tensorCount} | ${fixed(cpuP50)} | ` +
+        `${fixed(webnnP50)} | ${fixed(webnnP95)} | ` +
+        `${fixed(cpuP50 / webnnP50, 2)}x | ${fixed(report.loadMs)} | ` +
+        `${fixed(report.contextMs)} | ${fixed(report.graphMs)} | ` +
+        `${fixed(report.compileMs)} | ${fixed(report.prepareMs)} | ` +
+        `${report.maxAbsError.toExponential(2)} |`,
+    );
+  }
+});

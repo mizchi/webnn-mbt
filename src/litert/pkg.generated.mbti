@@ -1,0 +1,115 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/litert"
+
+import {
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+}
+
+// Values
+pub fn dequantize_int8(Array[Int], Float, Int) -> Array[Float] raise LiteRtError
+
+pub fn dequantize_uint8(Array[Int], Float, Int) -> Array[Float] raise LiteRtError
+
+pub fn requantize_int8(Array[Float], Float, Int) -> Array[Int] raise LiteRtError
+
+pub fn requantize_uint8(Array[Float], Float, Int) -> Array[Int] raise LiteRtError
+
+// Errors
+pub suberror LiteRtError {
+  LiteRtError(String)
+}
+pub fn LiteRtError::to_string(Self) -> String
+
+// Types and methods
+pub(all) struct LiteRtLoweredValue[T] {
+  name_ : String
+  tensor_ : T
+}
+pub fn[T] LiteRtLoweredValue::name(Self[T]) -> String
+pub fn[T] LiteRtLoweredValue::tensor(Self[T]) -> T
+
+pub(all) struct LiteRtModel {
+  values_ : Array[LiteRtValue]
+  nodes_ : Array[LiteRtNode]
+  output_names_ : Array[String]
+}
+pub fn LiteRtModel::inputs(Self) -> Array[LiteRtValue]
+pub fn[T : @tensor.TensorOps] LiteRtModel::lower(Self, (String, @shape.Shape) -> T raise, (String, @shape.Shape, Array[Float]) -> T raise) -> Array[LiteRtLoweredValue[T]] raise
+pub fn LiteRtModel::new(Array[LiteRtValue], Array[LiteRtNode], Array[String]) -> Self raise LiteRtError
+
+pub(all) enum LiteRtNode {
+  Add(String, String, String)
+  Sub(String, String, String)
+  Mul(String, String, String)
+  Div(String, String, String)
+  ReduceMean(String, String, Array[Int], Bool)
+  Gather(String, String, Array[Int], @shape.Shape, Int)
+  Slice(String, String, Array[Int], Array[Int])
+  Gelu(String, String)
+  LayerNormalization(String, String, String, String, Array[Int], Float)
+  Concat(String, String, String, Int)
+  Matmul(String, String, String)
+  Conv2d(String, String, String, @shape.Conv2dOptions)
+  MaxPool2d(String, String, @shape.Pool2dOptions)
+  AveragePool2d(String, String, @shape.Pool2dOptions)
+  Sigmoid(String, String)
+  Tanh(String, String)
+  Clamp(String, String, Float, Float)
+  Relu(String, String)
+  Softmax(String, String, Int)
+  Reshape(String, String)
+  Transpose(String, String, Array[Int])
+}
+
+pub(all) struct LiteRtValue {
+  name_ : String
+  shape_ : @shape.Shape
+  source_ : LiteRtValueSource
+}
+pub fn LiteRtValue::constant(String, @shape.Shape, Array[Float]) -> Self raise LiteRtError
+pub fn LiteRtValue::input(String, @shape.Shape) -> Self raise LiteRtError
+pub fn LiteRtValue::intermediate(String, @shape.Shape) -> Self raise LiteRtError
+pub fn LiteRtValue::name(Self) -> String
+pub fn LiteRtValue::shape(Self) -> @shape.Shape
+
+pub(all) enum LiteRtValueSource {
+  Input
+  Constant(Array[Float])
+  Intermediate
+}
+
+pub(all) struct TfliteModel {
+}
+pub fn TfliteModel::parse(Bytes) -> LiteRtModel raise LiteRtError
+pub fn TfliteModel::parse_runtime(Bytes) -> TfliteRuntimeModel raise LiteRtError
+
+pub(all) enum TfliteRuntimeDataType {
+  Float32
+  UInt8(Array[Float], Array[Int], Int)
+  Int8(Array[Float], Array[Int], Int)
+}
+
+pub(all) struct TfliteRuntimeModel {
+  model_ : LiteRtModel
+  inputs_ : Array[TfliteRuntimeTensor]
+  outputs_ : Array[TfliteRuntimeTensor]
+}
+pub fn TfliteRuntimeModel::inputs(Self) -> Array[TfliteRuntimeTensor]
+pub fn TfliteRuntimeModel::model(Self) -> LiteRtModel
+pub fn TfliteRuntimeModel::outputs(Self) -> Array[TfliteRuntimeTensor]
+
+pub(all) struct TfliteRuntimeTensor {
+  name_ : String
+  shape_ : @shape.Shape
+  data_type_ : TfliteRuntimeDataType
+}
+pub fn TfliteRuntimeTensor::data_type(Self) -> TfliteRuntimeDataType
+pub fn TfliteRuntimeTensor::dequantize(Self, Array[Int]) -> Array[Float] raise LiteRtError
+pub fn TfliteRuntimeTensor::name(Self) -> String
+pub fn TfliteRuntimeTensor::requantize(Self, Array[Float]) -> Array[Int] raise LiteRtError
+pub fn TfliteRuntimeTensor::shape(Self) -> @shape.Shape
+
+// Type aliases
+
+// Traits

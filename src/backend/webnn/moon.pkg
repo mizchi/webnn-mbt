@@ -1,0 +1,16 @@
+import {
+  "mizchi/js",
+  "mizchi/webnn/model",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/backend/cpu",
+  "mizchi/webnn/litert",
+  "mizchi/webnn/tensor",
+  "mizchi/webnn/webnn/compat",
+  "mizchi/webnn/webnn/raw",
+}
+
+import {
+  "moonbitlang/core/test",
+} for "wbtest"
+
+supported_targets = "js"

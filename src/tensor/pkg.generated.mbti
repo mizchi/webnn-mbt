@@ -1,0 +1,45 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn/tensor"
+
+import {
+  "mizchi/webnn/shape",
+}
+
+// Values
+
+// Errors
+pub suberror TensorError {
+  TensorError(String)
+}
+pub fn TensorError::new(String) -> Self
+pub fn TensorError::to_string(Self) -> String
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+pub(open) trait TensorOps {
+  fn shape(Self) -> @shape.Shape
+  fn add(Self, Self) -> Self raise
+  fn sub(Self, Self) -> Self raise
+  fn mul(Self, Self) -> Self raise
+  fn div(Self, Self) -> Self raise
+  fn reduce_mean(Self, Array[Int], Bool) -> Self raise
+  fn gather(Self, Array[Int], @shape.Shape, Int) -> Self raise
+  fn slice(Self, Array[Int], Array[Int]) -> Self raise
+  fn gelu(Self) -> Self raise
+  fn layer_normalization(Self, Self, Self, Array[Int], Float) -> Self raise
+  fn concat(Self, Self, Int) -> Self raise
+  fn matmul(Self, Self) -> Self raise
+  fn conv2d(Self, Self, @shape.Conv2dOptions) -> Self raise
+  fn max_pool2d(Self, @shape.Pool2dOptions) -> Self raise
+  fn average_pool2d(Self, @shape.Pool2dOptions) -> Self raise
+  fn sigmoid(Self) -> Self raise
+  fn tanh(Self) -> Self raise
+  fn clamp(Self, Float, Float) -> Self raise
+  fn relu(Self) -> Self raise
+  fn softmax(Self, Int) -> Self raise
+  fn reshape(Self, @shape.Shape) -> Self raise
+  fn transpose(Self, Array[Int]) -> Self raise
+}

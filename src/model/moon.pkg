@@ -1,0 +1,6 @@
+import {
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+}
+
+supported_targets = "js"
