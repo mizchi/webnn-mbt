@@ -8,7 +8,7 @@
     "node": ">=24"
   },
   "scripts": {
-    "build": "moon build --target js --release",
+    "build": "moon build --target js --release examples/playground/src/app",
     "bench": "pnpm run build && node scripts/bench.mjs",
     "bench:mnist": "pnpm run build && node scripts/bench-mnist.mjs",
     "prepare:mnist": "node scripts/prepare-mnist-fixture.mjs",

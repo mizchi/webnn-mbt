@@ -1,43 +1,45 @@
 # webnn-mbt
 
-MoonBit向けのWebNN backendおよびTFLite inference runtimeです。低レベルのWebNN binding、Chrome間のcompatibility adapter、型付きgraph builder、program cache、execution pool、TFLiteからWebNNへのloweringを提供します。Chrome Canaryのheadless modeで実装との互換性を継続検証しています。
+English | [日本語](./README.ja.md)
 
-現時点では `float32`、固定 shape、named multi-input/output の推論を対象にしています。対応演算は次のとおりです。
+A WebNN backend and TFLite inference runtime for MoonBit. It provides low-level WebNN bindings, a compatibility adapter for Chrome API revisions, a typed graph builder, a program cache, execution pools, and TFLite-to-WebNN lowering. Compatibility with the browser implementation is continuously tested in headless Chrome Canary.
+
+The current scope is `float32`, fixed-shape inference with named multi-input/output graphs. Supported operations are:
 
 - `add` / `sub` / `mul` / `div`
 - `reduce_mean` / `gather` / `slice` / `concat`
-- `matmul`（rank 2以上、batch dimensionのbroadcast対応）
-- `conv2d`（NCHW/OIHW と NHWC/HWIO）
+- `matmul` (rank 2 or higher, with batch-dimension broadcasting)
+- `conv2d` (NCHW/OIHW and NHWC/HWIO)
 - `max_pool2d` / `average_pool2d`
-- `sigmoid` / `tanh` / `gelu`（WebNN仕様のexact erf定義）
+- `sigmoid` / `tanh` / `gelu` (the exact erf definition from the WebNN specification)
 - `layer_normalization`
 - `clamp` / `relu`
 - `softmax`
 - `reshape`
 - `transpose`
 
-## 必要な環境
+## Requirements
 
-- MoonBit 0.10.3 以降
-- Node.js 24 以降
+- MoonBit 0.10.3 or later
+- Node.js 24 or later
 - pnpm
 - just
 - Google Chrome Canary
 
-macOS では Playwright の `chrome-canary` channel を利用します。テストは隔離された browser profile を使うため、通常の Canary で設定した `chrome://flags` には依存せず、次の feature flag を起動引数として渡します。
+On macOS, Playwright uses the `chrome-canary` channel. Tests run with an isolated browser profile, so they do not depend on settings in the regular Canary `chrome://flags` page. The required feature is passed as a launch argument:
 
 ```text
 --enable-features=WebMachineLearningNeuralNetwork
 ```
 
-## 実行
+## Running
 
 ```bash
 just install
 just check
 ```
 
-個別のタスクも実行できます。
+Individual tasks are also available:
 
 ```bash
 just unit
@@ -61,23 +63,32 @@ just bench-tflite-runner-cache
 just bench-mobilenet-v2
 ```
 
+## Workspace
+
+[`moon.work`](./moon.work) separates the published library from its browser consumer:
+
+- `.` is the `mizchi/webnn` library module. Its packages live under `src/`.
+- [`examples/playground`](./examples/playground) is the repository-local `mizchi/webnn-examples` application module. It depends on the workspace copy of `mizchi/webnn` and exposes the browser API used by Playwright.
+
+`just build` builds the playground application explicitly. MoonBit writes its JavaScript entry point to `_build/js/release/build/mizchi/webnn-examples/app/app.js`, which [`public/index.html`](./public/index.html) loads.
+
 ## CI
 
-[`.github/workflows/ci.yml`](./.github/workflows/ci.yml) は push、pull request、手動実行に加え、Chrome Canary の更新検知用に毎日 03:17 JST に動きます。権限はリポジトリ内容の読み取りだけに制限し、外部 Action は commit SHA で固定しています。
+[`.github/workflows/ci.yml`](./.github/workflows/ci.yml) runs on pushes, pull requests, manual dispatches, and every day at 03:17 JST to detect Chrome Canary updates. Permissions are limited to reading repository contents, and third-party Actions are pinned to commit SHAs.
 
-- `MoonBit contracts`: CI設定契約、`moon fmt --check`、`moon check`、117件のunit test、release build
-- `WebNN Canary E2E`: Ubuntu 24.04上のPlaywright配布 `chromium-tip-of-tree`（Chrome Canary for Testing headless shell）で72件のWebNN E2E
+- `MoonBit contracts`: CI configuration contracts, `moon fmt --check`, `moon check`, 117 unit tests, and a release build
+- `WebNN Canary E2E`: 72 WebNN end-to-end tests on Ubuntu 24.04 with Playwright's `chromium-tip-of-tree` distribution (Chrome Canary for Testing headless shell)
 
-失敗時はPlaywrightのHTML reportとtraceを7日間artifactとして保存します。CIと同じブラウザをローカルで再現する場合は次を実行します。
+On failure, Playwright HTML reports and traces are retained as artifacts for seven days. To reproduce the CI browser locally:
 
 ```bash
 pnpm exec playwright install --only-shell chromium-tip-of-tree
 WEBNN_BROWSER_CHANNEL=chromium-tip-of-tree just ci-e2e
 ```
 
-MoonBitは公式配布がrolling channelのため、CIでは`latest`を使用して`moon version --all`を記録します。MoonBitの更新による非互換も日次CIで検出します。
+The official MoonBit distribution uses rolling channels, so CI installs `latest` and records `moon version --all`. The daily run detects incompatibilities introduced by MoonBit updates as well.
 
-ベンチ対象の shape、warmup、反復数も指定できます。
+Benchmark shapes, warmup counts, and iteration counts can be configured:
 
 ```bash
 just bench 64,128,256 10 30
@@ -97,11 +108,11 @@ just bench-tflite-runner-cache 10 30
 just bench-mobilenet-v2 3 10
 ```
 
-測定方法とローカル M5 での結果は [BENCHMARK.md](./BENCHMARK.md) に記録しています。
+The measurement methodology and results from a local Apple M5 machine are recorded in [BENCHMARK.md](./BENCHMARK.md).
 
-## 設計
+## Design
 
-モデル定義は MoonXi Net を参考にした tagless-final 形式です。`Linear`、`Mlp`、`TinyCnn`、`LayerNorm`、`FeedForward`、`SelfAttention`、`TransformerEncoderBlock/Stack`、`BertEncoderBlock/Stack`の`forward[T : TensorOps]`はbackendに依存せず、同じコードを`CpuTensor`と`WebNNTensor`で実行できます。`TransformerEncoderBlock`はpre-norm、`BertEncoderBlock`はHugging Face BERT checkpointと同じpost-normのresidual境界を定義します。既存の`TransformerBlock`は旧feed-forwardベンチとの互換用です。
+Model definitions use a tagless-final style inspired by MoonXi Net. `forward[T : TensorOps]` on `Linear`, `Mlp`, `TinyCnn`, `LayerNorm`, `FeedForward`, `SelfAttention`, `TransformerEncoderBlock/Stack`, and `BertEncoderBlock/Stack` is backend-independent, so the same model code runs with both `CpuTensor` and `WebNNTensor`. `TransformerEncoderBlock` defines pre-norm residual boundaries, while `BertEncoderBlock` uses the post-norm boundaries of Hugging Face BERT checkpoints. The existing `TransformerBlock` remains as a compatibility API for the older feed-forward benchmark.
 
 ```text
 model/Linear
@@ -111,28 +122,28 @@ tensor/TensorOps
     |---------------------|
     v                     v
 backend/cpu          backend/webnn
-即時計算              MLOperand を構築
+eager execution      builds MLOperands
                           |
                           v
                     compile / dispatch / read
 ```
 
-各層の責務は分離しています。
+Responsibilities are separated by layer:
 
-- `shape`: shape 検証と演算後 shape の推論
-- `tensor`: backend 共通の演算コントラクト
-- `model`: backend 非依存のモデル定義
-- `bert`: Hugging Face named tensorの検証、dense weight転置、BERT parameterへの変換
-- `backend/cpu`: differential test 用の eager CPU 実装
-- `webnn/raw`: WebNN JavaScript API の薄い FFI
-- `webnn/compat`: 現行 Chrome の `deviceType` と最新仕様の `accelerated` の差を吸収
-- `backend/webnn`: symbolic tensor、compile、program cache、execution pool、tensor lifecycle
-- `app`: Playwright から呼び出す browser API
-- `benchmark`: CPU/WebNN の正しさを比較しながら setup と steady-state を計測
-- `litert`: named tensor、float32 constant、演算列を表す source-neutral な IR と `TensorOps` lowerer
-- `mnist`: 学習済みMLP weights・IDX loader・CPU/WebNN evaluation/benchmark
+- `shape`: shape validation and result-shape inference
+- `tensor`: backend-neutral operation contracts
+- `model`: backend-independent model definitions
+- `bert`: Hugging Face named-tensor validation, dense-weight transposition, and conversion to BERT parameters
+- `backend/cpu`: eager CPU implementation for differential testing
+- `webnn/raw`: thin FFI over the WebNN JavaScript API
+- `webnn/compat`: compatibility between Chrome's current `deviceType` API and the newer `accelerated` contract
+- `backend/webnn`: symbolic tensors, compilation, program cache, execution pools, and tensor lifecycle
+- `examples/playground/src/app`: consumer-side browser API called from Playwright
+- `benchmark`: setup and steady-state measurements with CPU/WebNN correctness comparisons
+- `litert`: source-neutral IR for named tensors, float32 constants, and operation sequences, plus a `TensorOps` lowerer
+- `mnist`: trained MLP weights, IDX loading, and CPU/WebNN evaluation and benchmarks
 
-Transformer系の公開APIは、検証済みのconfig、backend非依存parameter、materialize済みmodelを分離します。
+The public Transformer API separates validated configuration, backend-independent parameters, and materialized models:
 
 ```text
 SelfAttentionConfig / TransformerEncoderConfig / TransformerEncoderStackConfig
@@ -147,68 +158,50 @@ SelfAttentionConfig / TransformerEncoderConfig / TransformerEncoderStackConfig
 TransformerEncoderStack[CpuTensor]     TransformerEncoderStack[WebNNTensor]
 ```
 
-`SelfAttentionConfig::new(width, heads)`、`TransformerEncoderConfig::new(width, heads, hidden_size, input_rank, epsilon)`、`TransformerEncoderStackConfig::new(layers, ...)`がdimensionと層数を検証します。`SelfAttentionParameters`、`FeedForwardParameters`、`TransformerEncoderParameters`、`TransformerEncoderStackParameters`は入力配列をcopyして所有し、getterもcopyを返します。CPU/WebNNの`materialize_transformer_encoder_stack()`はmask constantを一度だけmaterializeし、全層で共有します。
+`SelfAttentionConfig::new(width, heads)`, `TransformerEncoderConfig::new(width, heads, hidden_size, input_rank, epsilon)`, and `TransformerEncoderStackConfig::new(layers, ...)` validate dimensions and layer counts. `SelfAttentionParameters`, `FeedForwardParameters`, `TransformerEncoderParameters`, and `TransformerEncoderStackParameters` own copies of their input arrays, and their getters return copies. CPU and WebNN `materialize_transformer_encoder_stack()` implementations materialize the mask constant once and share it across all layers.
 
-`AttentionMask`は全batch共通の`causal` / `padding` / `causal_padding`に加え、`batched_padding` / `batched_causal_padding`で`[batch,1,tokens,tokens]`を生成します。`additive(shape, values)`では検証済みの任意additive maskを渡せます。
+In addition to batch-shared `causal`, `padding`, and `causal_padding` masks, `AttentionMask` provides `batched_padding` and `batched_causal_padding` to generate `[batch,1,tokens,tokens]`. `additive(shape, values)` accepts any validated additive mask.
 
 ### BERT encoder loader
 
-`BertEncoderConfig`と`BertEncoderParameters`はpost-norm BERT専用の契約です。`@bert.NamedTensor`でHugging Face/PyTorch checkpointのtensor名・shape・float32値を渡し、`load_hugging_face_encoder(config, tensors, "bert.encoder")`でparameterへ変換します。`query/key/value`、attention output、intermediate、output denseのweightはcheckpointの`[out_features,in_features]`から`Linear`の`[in_features,out_features]`へ転置します。欠落、重複、shape不一致は完全なtensor名を含む`TensorError`になります。embeddingsやpoolerなどencoder外のtensorは無視します。
+`BertEncoderConfig` and `BertEncoderParameters` define the post-norm BERT contract. Pass Hugging Face/PyTorch checkpoint tensor names, shapes, and float32 values as `@bert.NamedTensor`, then convert them with `load_hugging_face_encoder(config, tensors, "bert.encoder")`. Query/key/value, attention output, intermediate, and output dense weights are transposed from checkpoint `[out_features,in_features]` layout to the `Linear` `[in_features,out_features]` layout. Missing tensors, duplicates, and shape mismatches produce `TensorError` values containing the full tensor name. Tensors outside the encoder, such as embeddings and the pooler, are ignored.
 
-`parse_safetensors(bytes)`はSafeTensorsの8-byte little-endian header長、UTF-8 JSON header、data section相対offset、row-major little-endian F32を検証して`Array[NamedTensor]`を返します。offsetの穴・重なり・末尾の未参照byte、shapeとbyte長の不一致も拒否します。`just fixture-bert`は2層・width 8・32 tensorのdeterministic `.safetensors`を生成し、Canary E2Eで`fetch → parse → mapping → CPU/WebNN`を検証します。
+`parse_safetensors(bytes)` validates the SafeTensors eight-byte little-endian header length, UTF-8 JSON header, data-section-relative offsets, and row-major little-endian F32 data, then returns `Array[NamedTensor]`. It also rejects gaps, overlapping offsets, unreferenced trailing bytes, and mismatches between shapes and byte lengths. `just fixture-bert` generates a deterministic two-layer, width-8, 32-tensor `.safetensors` file. Canary E2E covers `fetch → parse → mapping → CPU/WebNN`.
 
-CPU/WebNNの`materialize_bert_encoder_stack()`はpadding maskを一度だけmaterializeして全層で共有します。推論用のためdropoutは含みません。
+CPU and WebNN `materialize_bert_encoder_stack()` implementations materialize the padding mask once and share it across all layers. Dropout is omitted because this is an inference implementation.
 
-`WebNNProgramCache` は compiled graph と prepared input/output tensor をまとめた
-`WebNNProgram` を内部所有します。公開APIは `run_or_compile()` と
-`run_named_or_compile()` のみで、呼び出し元へprogramを返さないため、cached programを
-誤って `destroy()` する経路を作りません。cache key は versioned canonical string で、graph identity、
-device preference、順序付き input shapes、execution pool sizeを含みます。MNIST の graph identity には
-MLP topology/layout のversionとfixture weightsのSHA-256を含め、weightsやshapeが
-変わったprogramを誤って再利用しないようにしています。cache missの途中で同じkeyが
-登録された場合は、後から完成したprogramを破棄して既存entryを採用します。cached resourceの解放は
-`clear()` に一元化されています。`clear()` はgenerationを進めるため、compile中だった古いentryは
-呼び出し結果だけ返した後に破棄され、clear後のcacheへ再登録されません。
+`WebNNProgramCache` internally owns each `WebNNProgram`, which combines a compiled graph with prepared input and output tensors. Its public API only exposes `run_or_compile()` and `run_named_or_compile()`, so callers cannot accidentally `destroy()` a cached program. Cache keys are versioned canonical strings containing graph identity, device preference, ordered input shapes, and execution-pool size. The MNIST graph identity also includes the MLP topology/layout version and the SHA-256 of fixture weights, preventing reuse after weights or shapes change. If the same key is registered while another cache miss is compiling, the later program is destroyed and the existing entry is retained. Cached-resource cleanup is centralized in `clear()`. Clearing advances a generation, so an older in-flight compilation may return its result to the caller but is destroyed afterward and never reinserted.
 
-`WebNNProgram` はpool size分の独立したinput/output tensor slotを持ち、FIFO schedulerが
-空きslotへrunを割り当てます。pool size 1では同じprepared tensorへのwrite/dispatch/readを
-直列化し、2以上ではslot間の並行実行を許可します。途中のrunが失敗しても後続runを継続し、
-`destroy()` は新規runを拒否してaccepted済みrunの完了後に全slotとcontextを解放します。
+`WebNNProgram` owns independent input/output tensor slots for its pool size, and a FIFO scheduler assigns runs to available slots. Pool size 1 serializes write/dispatch/read access to the same prepared tensors. Larger pools allow concurrent execution across slots. A failed run does not stop later runs. `destroy()` rejects new runs, waits for all accepted runs, and then releases every slot and its context.
 
-既定pool sizeは逐次latencyとmemoryを優先して1です。今回のMNIST同時request測定では2で
-throughput改善の大半を得られたため、並行用途では2を最初の候補とし、4以上は実測して
-選びます。
+The default pool size is 1 to favor sequential latency and memory use. In the concurrent MNIST measurements, size 2 captured most of the throughput improvement. Start with 2 for concurrent workloads, and benchmark before selecting 4 or more.
 
-graphのI/Oは`WebNNInput`、`WebNNOutput`、runtime値は`WebNNNamedValues`で表現します。
-`compile_named()` / `run_named()` は配列順ではなく名前で入力を照合し、出力はgraph宣言順で
-返します。空名、重複名、未知名、不足、要素数不一致はWebNN dispatch前にMoonBit側で拒否します。
-従来の`compile_single()` / `run()`は1入力・1出力用の互換wrapperとして残しています。
+Graph I/O is represented by `WebNNInput` and `WebNNOutput`; runtime values use `WebNNNamedValues`. `compile_named()` and `run_named()` bind inputs by name rather than array order and return outputs in graph declaration order. Empty, duplicate, unknown, missing, and incorrectly sized values are rejected in MoonBit before WebNN dispatch. The older `compile_single()` and `run()` APIs remain as compatibility wrappers for one-input, one-output graphs.
 
-WebNN context の `opSupportLimits()` を読み、対象 operator が報告されていない場合は graph 構築前にエラーにします。shape と input/constant の要素数も MoonBit 側で検証します。`probe_capabilities(preference)` は `WebNNCapabilities` として、認識した context contract、preferred input layout、`opSupportLimits()`、prepared tensor I/O、backendが使うoperator群を返します。Canary E2Eはこの値を検証し、仕様または実装の更新を検出します。
+The backend reads `opSupportLimits()` and fails before graph construction when a required operator is not reported. Shapes and input/constant element counts are also validated in MoonBit. `probe_capabilities(preference)` returns a `WebNNCapabilities` value containing the recognized context contract, preferred input layout, availability of `opSupportLimits()`, prepared tensor I/O support, and the backend's operator set. Canary E2E validates this value to detect specification or implementation changes.
 
-`WebNNInput` / `WebNNOutput` が名前・shape・operandを一体で保持するため、compile時に別builderのoperandを誤って指定できません。`WebNNGraphBuilder`はcontextの所有者です。単発sessionは`defer graph.destroy()`、compiled programは`program.destroy()`で全slotとcontextを解放します。
+`WebNNInput` and `WebNNOutput` keep names, shapes, and operands together, preventing operands from another builder from being passed during compilation. `WebNNGraphBuilder` owns the context. One-shot sessions use `defer graph.destroy()`; compiled programs release all slots and their context through `program.destroy()`.
 
-`LiteRtModel` は input・constant・intermediate を名前とshapeで宣言し、演算列を検証してから
-generic `TensorOps` へ lower します。現在は `add`、`sub`、`mul`、`div`、`reduce_mean`、`gather`、`slice`、`gelu`、`layer_normalization`、`concat`、`matmul`、`conv2d`、`max_pool2d`、`average_pool2d`、`sigmoid`、`tanh`、`clamp`、`relu`、`softmax`、`reshape`、`transpose` を表現できます。`gelu` は現行WebNN仕様のexact `0.5*x*(1+erf(x/sqrt(2)))`をCPU/WebNN共通の契約にします。`layer_normalization(input, scale, bias, axes, epsilon)` は非空かつ重複のない明示的なaxisを受け、`scale`と`bias`にはaxis順のdimensionからなるshape、`epsilon`には正の値を要求します。WebNN 固有の `WebNNGraphBuilder.lower_litert(model)` が input/constant を materialize し、`compile_litert_program(model)` / `compile_litert_program_pool(model, pool_size)` が lower・named I/O binding・compile・prepared execution をまとめて所有します。
+`LiteRtModel` declares inputs, constants, and intermediates by name and shape, validates its operation sequence, and then lowers to generic `TensorOps`. It currently represents `add`, `sub`, `mul`, `div`, `reduce_mean`, `gather`, `slice`, `gelu`, `layer_normalization`, `concat`, `matmul`, `conv2d`, `max_pool2d`, `average_pool2d`, `sigmoid`, `tanh`, `clamp`, `relu`, `softmax`, `reshape`, and `transpose`. `gelu` uses the current WebNN exact definition, `0.5*x*(1+erf(x/sqrt(2)))`, as the shared CPU/WebNN contract. `layer_normalization(input, scale, bias, axes, epsilon)` requires explicit, non-empty, unique axes; the shapes of `scale` and `bias` must contain the corresponding dimensions in axis order, and epsilon must be positive. WebNN-specific `WebNNGraphBuilder.lower_litert(model)` materializes inputs and constants. `compile_litert_program(model)` and `compile_litert_program_pool(model, pool_size)` own lowering, named I/O binding, compilation, and prepared execution.
 
-`TfliteModel::parse(bytes)` は [TFLite schema](https://chromium.googlesource.com/external/github.com/tensorflow/tensorflow/+/3e5424592ce7a5eeded530a58cc42f9fb981e40a/tensorflow/lite/schema/schema.fbs) の FlatBuffer を読み、単一subgraphの `ADD`、`SUB`、`MUL`、`DIV`、`MEAN`、`GATHER`、`SLICE`、`CONCATENATION`、`RELU`、`RELU_N1_TO_1`、`RELU6`、`LOGISTIC`、`TANH`、`SOFTMAX`、`FULLY_CONNECTED`、`CONV_2D`、`DEPTHWISE_CONV_2D`、`AVERAGE_POOL_2D`、`MAX_POOL_2D`、`RESHAPE`、`TRANSPOSE` をfloat32 IRへ変換します。`MEAN` はconstant INT32 axes、`GATHER` はconstant INT32 indices、`SLICE` はconstant INT32 begin/size（`-1` は末尾まで）のみを受け、axisと出力shapeを検証します。`CONCATENATION` は2個以上のinputをbinary `concat`列へlowerし、negative axisとfused activationを扱います。`UINT8`/`INT8` constantは `scale * (q - zero_point)` で静的dequantizeし、per-axis metadata、current schemaの`quantized_dimension`と旧encoderのfield位置の差、量子化`INT32` biasも扱います。rank 1 bias がproducerのNHWC channel axisを保持する実モデルは、scale数がbias要素数と一致する場合にaxis 0へ正規化します。operator出力はbufferの有無でなくgraph topologyからintermediateと判定します。rank 2超の`FULLY_CONNECTED` inputは `[batch, flattened]` を明示的に`reshape`してからlowerします。custom operatorは実行前に名前付きで拒否します。
+`TfliteModel::parse(bytes)` reads a FlatBuffer following the [TFLite schema](https://chromium.googlesource.com/external/github.com/tensorflow/tensorflow/+/3e5424592ce7a5eeded530a58cc42f9fb981e40a/tensorflow/lite/schema/schema.fbs) and converts a single subgraph containing `ADD`, `SUB`, `MUL`, `DIV`, `MEAN`, `GATHER`, `SLICE`, `CONCATENATION`, `RELU`, `RELU_N1_TO_1`, `RELU6`, `LOGISTIC`, `TANH`, `SOFTMAX`, `FULLY_CONNECTED`, `CONV_2D`, `DEPTHWISE_CONV_2D`, `AVERAGE_POOL_2D`, `MAX_POOL_2D`, `RESHAPE`, or `TRANSPOSE` into float32 IR. `MEAN` accepts constant INT32 axes, `GATHER` accepts constant INT32 indices, and `SLICE` accepts constant INT32 begin/size values, where `-1` extends to the end. Axes and output shapes are validated. `CONCATENATION` lowers two or more inputs into binary `concat` steps and supports negative axes and fused activations. `UINT8` and `INT8` constants are statically dequantized with `scale * (q - zero_point)`. Per-axis metadata, the current `quantized_dimension` field position, older encoder layouts, and quantized `INT32` biases are supported. When a rank-1 bias preserves its producer's NHWC channel axis, it is normalized to axis 0 if the scale count matches the bias element count. Operator outputs are classified as intermediates from graph topology rather than buffer presence. `FULLY_CONNECTED` inputs above rank 2 are explicitly reshaped to `[batch, flattened]` before lowering. Custom operators are rejected by name before execution.
 
-任意の .tflite bytes を実行する用途には低レベルの`TfliteRunner`/`TfliteRunnerCache`に加え、`WebNNRuntime` を使えます。`WebNNRuntime::new(preference)` または `new_with_pool(preference, pool_size)` は、各32モデル・source FlatBuffer合計64 MiB上限のWebNN LRU cacheを内部所有します。上限・fallbackを明示するには`new_with_options(preference, pool_size, capacity, fallback)`、WebNN失敗時のCPU再試行を選ぶには`new_with_cpu_fallback(preference, pool_size, capacity)`を使います。entry数とbyte budgetを個別に制御するには`new_with_cache_limits(preference, pool_size, webnn_entries, webnn_bytes, cpu_entries, cpu_bytes, fallback)`を使います。byte budgetはブラウザがcompiled WebNN resourceの実メモリ量を公開しないため、正確に追跡できるモデルFlatBuffer bytesで管理します。単体cacheにも`TfliteRunnerCache::new_with_limits(entries, bytes)`と`TfliteCpuRunnerCache::new_with_limits(entries, bytes)`があります。予算より大きいmodelは既存entryをすべて追い出さず、transientに実行して直後に解放します。
+For arbitrary `.tflite` bytes, use the high-level `WebNNRuntime` or the lower-level `TfliteRunner` and `TfliteRunnerCache`. `WebNNRuntime::new(preference)` and `new_with_pool(preference, pool_size)` own a WebNN LRU cache limited to 32 models and 64 MiB of source FlatBuffers. Use `new_with_options(preference, pool_size, capacity, fallback)` to configure limits and fallback, `new_with_cpu_fallback(preference, pool_size, capacity)` to retry on CPU after WebNN failure, or `new_with_cache_limits(preference, pool_size, webnn_entries, webnn_bytes, cpu_entries, cpu_bytes, fallback)` to configure entry and byte budgets independently. Since browsers do not expose the exact memory used by compiled WebNN resources, byte budgets track the measurable source FlatBuffer size. Standalone caches provide `TfliteRunnerCache::new_with_limits(entries, bytes)` and `TfliteCpuRunnerCache::new_with_limits(entries, bytes)`. Models larger than the budget run transiently and are released immediately without evicting all existing entries.
 
-`metrics()`はWebNN cacheの累積hit/miss/eviction/entry数・resident bytesと、CPU fallback数・CPU parsed-model cacheの同種metricsを返します。`clear()`はWebNN programとCPU parsed modelを解放してもcounterをリセットせず、実行中compileはgenerationで無効化するため、clear後に完了してもcacheへ再挿入されません。大きなmodelの定常実行では、`TfliteModelArtifact::from_bytes(bytes)`でbytesを所有しdigestを一度だけ計算し、`run_prepared_tflite(artifact, inputs)`を使うと毎回のSHA-256を省けます。CPU fallbackは同じquantized I/O contractの`TfliteCpuRunner`を使い、初回にparse/lowerしたmodelをdigest keyで再利用します。ただしWebNNを毎回試みるため、これは通常経路の性能代替ではなく可用性のためのポリシーです。run は TFLite の tensor name で input を照合し、float32 tensor には `TfliteRunnerInput::float32`、量子化 tensor には `::quantized` を受け付けます。出力は元の TFLite dtype に従い float32 または raw `Array[Int]` です。
+`metrics()` returns cumulative WebNN cache hits, misses, evictions, entry count, and resident bytes, along with CPU fallback count and the corresponding parsed-model cache metrics. `clear()` releases WebNN programs and CPU parsed models without resetting counters. Its generation check prevents an in-flight compilation from reinserting itself after a clear. For steady-state execution of large models, `TfliteModelArtifact::from_bytes(bytes)` owns the bytes and computes the digest once; `run_prepared_tflite(artifact, inputs)` avoids recalculating SHA-256 on every call. CPU fallback uses `TfliteCpuRunner` with the same quantized I/O contract and reuses the parsed/lowered model by digest after the first call. Since WebNN is still attempted first each time, fallback is an availability policy rather than a normal-path performance substitute. Inputs are bound by TFLite tensor name. Float32 tensors accept `TfliteRunnerInput::float32`; quantized tensors accept `::quantized`. Outputs follow the original TFLite dtype and contain either float32 values or raw `Array[Int]` values.
 
-## 実 TFLite fixture
+## Real TFLite fixtures
 
-`just fixture-tflite` はTensorFlow Lite Microのcommitを固定し、SHA-256を検証してfixtureを取得します。
+`just fixture-tflite` downloads fixtures from pinned TensorFlow Lite Micro commits and verifies their SHA-256 digests.
 
-- `micro_speech_quantized.tflite`（18,800 bytes）は `RESHAPE → DEPTHWISE_CONV_2D → FULLY_CONNECTED → SOFTMAX` の量子化実モデルです。raw INT8 input/output、INT32 bias、rank 4からのflatten、およびruntime cacheをCanary E2Eで検証します。
-- `person_detect.tflite`（300,568 bytes）は 96×96 grayscale の量子化人物検出CNNです。rank 1のper-channel INT32 biasがproducerのaxis 3を保持する実モデル表現を正規化し、zero inputのraw INT8 I/O・compiled runtime cacheをCanary E2Eで検証します。
-- `mobilenet_v2_1.0_224_inat_bird_quant.tflite`（3,531,296 bytes）は Coral Edge TPU の量子化MobileNet V2分類モデルです。delegateを使わず、parse/lower/compile、raw UINT8 I/O、cache hitをCanary E2Eで検証します。
-- `audio_preprocessor_int8.tflite`（8,772 bytes）は `SignalWindow` custom operatorを含むnegative fixtureです。現時点では `unsupported TFLite custom operator: SignalWindow` と拒否されることを固定しています。
+- `micro_speech_quantized.tflite` (18,800 bytes) is a real quantized `RESHAPE → DEPTHWISE_CONV_2D → FULLY_CONNECTED → SOFTMAX` model. Canary E2E covers raw INT8 I/O, INT32 bias, flattening from rank 4, and runtime caching.
+- `person_detect.tflite` (300,568 bytes) is a quantized 96×96 grayscale person-detection CNN. It exercises normalization of rank-1 per-channel INT32 bias metadata that retains producer axis 3, zero-input raw INT8 I/O, and the compiled runtime cache.
+- `mobilenet_v2_1.0_224_inat_bird_quant.tflite` (3,531,296 bytes) is a quantized MobileNet V2 classification model from Coral Edge TPU. Canary E2E covers parse/lower/compile without a delegate, raw UINT8 I/O, and cache hits.
+- `audio_preprocessor_int8.tflite` (8,772 bytes) is a negative fixture containing the `SignalWindow` custom operator. It currently locks in the rejection message `unsupported TFLite custom operator: SignalWindow`.
 
-## ブラウザ API
+## Browser API
 
-ビルドされたページは `globalThis.webnnPlayground` に検証用 API を公開します。
+The built page exposes a test API as `globalThis.webnnPlayground`:
 
 - `compatibilityMode()`
 - `supportedOperators()`
@@ -270,8 +263,8 @@ generic `TensorOps` へ lower します。現在は `add`、`sub`、`mul`、`div
 - `clearMnistCache()`
 - `runMnistCached(batchSize)`
 - `benchmarkMnistCache(batchSize, warmup, iterations)`
-- `probeConcurrentProgram()`（並行run・deferred destroyのE2E検証用）
-- `probeExecutionPool()`（複数slot割り当てのE2E検証用）
+- `probeConcurrentProgram()` (E2E probe for concurrent runs and deferred destruction)
+- `probeExecutionPool()` (E2E probe for multi-slot assignment)
 - `benchmarkMnistPool(poolSize, requestCount, warmup, iterations)`
 - `runNamedMultiIo()`
 - `benchmarkNamedIo(size, warmup, iterations)`
@@ -280,21 +273,21 @@ generic `TensorOps` へ lower します。現在は `add`、`sub`、`mul`、`div
 - `benchmarkTinyCnnLayout(inputLayout, batchSize, warmup, iterations)`
 - `runPreferredLayoutConv()`
 
-`runLinear()` と `runCpuLinear()` は同じ generic `Linear.forward` を使い、Playwright で結果を比較します。
+`runLinear()` and `runCpuLinear()` use the same generic `Linear.forward` implementation, and Playwright compares their results.
 
-## 制限
+## Limitations
 
-- WebNN の全 operator、全 data type、動的 shape には未対応です。
-- `.tflite` parserは単一subgraph・`ADD`/`SUB`/`MUL`/`DIV`/`MEAN`/`GATHER`/`SLICE`/`CONCATENATION`/`RELU`/`RELU_N1_TO_1`/`RELU6`/`LOGISTIC`/`TANH`/`SOFTMAX`/`FULLY_CONNECTED`/`CONV_2D`/`DEPTHWISE_CONV_2D`/`AVERAGE_POOL_2D`/`MAX_POOL_2D`/`RESHAPE`/`TRANSPOSE` に限定しています。`GELU`と`layer_normalization`はgeneric IR/APIでは利用できますが、TFLite parserからはまだ生成しません。`CONCATENATION` は負のaxis、2個以上のinput、fused activationを扱います。`UINT8`/`INT8` はpositive scale と zero-pointを必須とし、constantはscalar per-tensorまたはshapeに適合するper-axis quantizationでfloat32へ静的dequantizeします。量子化`INT32`はbias constantのみ対応し、int32の演算・runtime入力は未対応です。fused activation は `NONE`、`RELU`、`RELU_N1_TO_1`、`RELU6`、`TANH` に限り、`SIGN_BIT` は未対応です。`INT16`、`FLOAT16` は未対応です。複数subgraph/control-flow、custom operator（例: `SignalWindow`）は未対応です。
-- `conv2d`はNCHW input/OIHW filter と NHWC input/HWIO filterをサポートします。padding、stride、dilation、groupsに対応し、biasはレイアウトに合わせてNCHWでは`[1,C,1,1]`、NHWCでは`[1,1,1,C]`の`add`で表現します。`WebNNGraphBuilder.preferred_input_layout()` はcontextの`opSupportLimits().preferredInputLayout`を読んで選択に利用できます。
-- `accelerated` contract では CPU/accelerator の区別しか指定できないため、`Npu` は `accelerated: true` に変換されます。
-- 現行 Canary の `deviceType: "npu"` が成功しても、実際に Apple Neural Engine が選択されたことまでは WebNN API から確認できません。
-- native backend はこの実装には含めず、将来 Core ML / ONNX Runtime backend として追加する想定です。
-- BERT loaderはencoder layerのみを対象とし、embeddings、pooler、task head、ONNX、`gelu_new`には未対応です。SafeTensors parserは単一fileのF32・正の固定shapeのみを受け、F16/BF16、sharded index、zero-sized tensorには未対応です。
-- execution poolは同じbrowser threadとWebNN contextを共有します。pool sizeを増やしてもhardware/backend内部の並列度以上には速くならず、slotごとのtensor memoryは増えます。
-- Canary 152では同じ`MLOperand`を2つのoutput名へ直接指定するとbuildが`Context is lost`で失敗しました。別operand化する`reshape`で回避できます。
+- Not every WebNN operator, data type, or dynamic shape is supported.
+- The `.tflite` parser is limited to a single subgraph and `ADD`/`SUB`/`MUL`/`DIV`/`MEAN`/`GATHER`/`SLICE`/`CONCATENATION`/`RELU`/`RELU_N1_TO_1`/`RELU6`/`LOGISTIC`/`TANH`/`SOFTMAX`/`FULLY_CONNECTED`/`CONV_2D`/`DEPTHWISE_CONV_2D`/`AVERAGE_POOL_2D`/`MAX_POOL_2D`/`RESHAPE`/`TRANSPOSE`. `GELU` and `layer_normalization` are available in the generic IR/API but are not yet emitted by the TFLite parser. `CONCATENATION` supports negative axes, two or more inputs, and fused activations. `UINT8` and `INT8` require positive scales and zero points; constants are statically dequantized to float32 using either scalar per-tensor or shape-compatible per-axis quantization. Quantized `INT32` is supported only for bias constants; int32 computation and runtime inputs are not supported. Fused activations are limited to `NONE`, `RELU`, `RELU_N1_TO_1`, `RELU6`, and `TANH`; `SIGN_BIT` is not supported. `INT16` and `FLOAT16` are not supported. Multiple subgraphs, control flow, and custom operators such as `SignalWindow` are not supported.
+- `conv2d` supports NCHW inputs with OIHW filters and NHWC inputs with HWIO filters. Padding, stride, dilation, and groups are supported. Bias is expressed as an `add` with `[1,C,1,1]` for NCHW or `[1,1,1,C]` for NHWC. `WebNNGraphBuilder.preferred_input_layout()` reads `opSupportLimits().preferredInputLayout` to guide layout selection.
+- The `accelerated` contract distinguishes only CPU from accelerated execution, so `Npu` maps to `accelerated: true`.
+- Even when the current Canary implementation accepts `deviceType: "npu"`, the WebNN API cannot confirm that Apple Neural Engine was selected.
+- A native backend is intentionally outside this implementation. It may be added later as a Core ML or ONNX Runtime backend.
+- The BERT loader covers encoder layers only. Embeddings, poolers, task heads, ONNX, and `gelu_new` are unsupported. The SafeTensors parser accepts only a single file containing F32 tensors with positive fixed shapes; F16/BF16, sharded indexes, and zero-sized tensors are unsupported.
+- Execution pools share the same browser thread and WebNN context. Increasing pool size cannot exceed the concurrency available in the hardware/backend and increases per-slot tensor memory.
+- In Canary 152, passing the same `MLOperand` directly under two output names caused the build to fail with `Context is lost`. Creating a distinct operand with `reshape` avoids the issue.
 
-参考:
+References:
 
 - [WebNN specification](https://www.w3.org/TR/webnn/)
 - [SafeTensors format](https://github.com/huggingface/safetensors#format)

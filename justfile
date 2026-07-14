@@ -25,7 +25,7 @@ unit:
     moon test --target js
 
 build:
-    moon build --target js --release
+    moon build --target js --release examples/playground/src/app
 
 e2e: fixture-tflite fixture-bert build
     pnpm exec playwright test
@@ -35,7 +35,7 @@ ci-unit:
     moon fmt --check
     moon check --target js
     moon test --target js
-    moon build --target js --release
+    moon build --target js --release examples/playground/src/app
 
 ci-e2e: fixture-tflite fixture-bert build
     pnpm exec playwright test
@@ -88,5 +88,5 @@ bench-mobilenet-v2 warmup="3" iterations="10": fixture-tflite build
 check: fmt info fixture-tflite fixture-bert
     moon check --target js
     moon test --target js
-    moon build --target js --release
+    moon build --target js --release examples/playground/src/app
     pnpm exec playwright test

@@ -1,4 +1,5 @@
 ///|
+/// Browser playground entry point built as a consumer of `mizchi/webnn`.
 extern "js" fn expose_api(
   compatibility_mode : () -> String,
   supported_operators : () -> @js.Promise[Array[String]],
