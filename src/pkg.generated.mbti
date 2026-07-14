@@ -1,0 +1,119 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "mizchi/webnn"
+
+import {
+  "mizchi/webnn/litert",
+  "mizchi/webnn/shape",
+  "mizchi/webnn/tensor",
+  "mizchi/webnn/webnn/compat",
+}
+
+// Values
+pub fn compatibility_mode() -> String
+
+pub fn dequantize_int8(Array[Int], Float, Int) -> Array[Float] raise @litert.LiteRtError
+
+pub fn dequantize_uint8(Array[Int], Float, Int) -> Array[Float] raise @litert.LiteRtError
+
+pub async fn probe_capabilities(@compat.DevicePreference) -> @mizchi/webnn/backend/webnn.WebNNCapabilities
+
+pub fn requantize_int8(Array[Float], Float, Int) -> Array[Int] raise @litert.LiteRtError
+
+pub fn requantize_uint8(Array[Float], Float, Int) -> Array[Int] raise @litert.LiteRtError
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @shape {type Conv2dFilterLayout}
+
+pub using @shape {type Conv2dOptions}
+
+pub using @compat {type DevicePreference}
+
+pub using @shape {type InputLayout}
+
+pub using @litert {type LiteRtError}
+
+pub using @litert {type LiteRtLoweredValue}
+
+pub using @litert {type LiteRtModel}
+
+pub using @litert {type LiteRtNode}
+
+pub using @litert {type LiteRtValue}
+
+pub using @shape {type Pool2dOptions}
+
+pub using @shape {type Shape}
+
+pub using @shape {type ShapeError}
+
+pub using @tensor {type TensorError}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteCpuRunner}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteCpuRunnerCache}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteCpuRunnerCacheMetrics}
+
+pub using @litert {type TfliteModel}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteModelArtifact}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteRunner}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteRunnerCache}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteRunnerCacheKey}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteRunnerCacheMetrics}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteRunnerInput}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteRunnerOutput}
+
+pub using @mizchi/webnn/backend/webnn {type TfliteRunnerValues}
+
+pub using @litert {type TfliteRuntimeDataType}
+
+pub using @litert {type TfliteRuntimeModel}
+
+pub using @litert {type TfliteRuntimeTensor}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNCapabilities}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNContextContract}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNExecution}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNGraphBuilder}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNInput}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNLoweredLiteRtGraph}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNNamedValues}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNOutput}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNProgram}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNProgramCache}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNProgramCacheKey}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNRuntime}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNRuntimeFallback}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNRuntimeMetrics}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNSession}
+
+pub using @mizchi/webnn/backend/webnn {type WebNNTensor}
+
+pub using @tensor {trait TensorOps}
+
+// Traits

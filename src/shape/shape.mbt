@@ -10,7 +10,7 @@ pub fn ShapeError::to_string(self : ShapeError) -> String {
 }
 
 ///|
-pub(all) struct Shape {
+pub struct Shape {
   dimensions_ : Array[Int]
 }
 

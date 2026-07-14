@@ -59,7 +59,7 @@ pub fn Pool2dOptions::padding(Self) -> Array[Int]
 pub fn Pool2dOptions::strides(Self) -> Array[Int]
 pub fn Pool2dOptions::window_dimensions(Self) -> Array[Int]
 
-pub(all) struct Shape {
+pub struct Shape {
   dimensions_ : Array[Int]
 }
 pub fn Shape::broadcast(Self, Self) -> Self raise ShapeError

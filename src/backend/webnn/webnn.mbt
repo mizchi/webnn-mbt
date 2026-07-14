@@ -6,7 +6,7 @@ pub struct WebNNGraphBuilder {
 }
 
 ///|
-pub(all) enum WebNNContextContract {
+pub enum WebNNContextContract {
   Accelerated
   LegacyDeviceType
 } derive(Debug, Eq)

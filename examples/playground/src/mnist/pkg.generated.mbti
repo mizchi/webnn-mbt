@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "mizchi/webnn/mnist"
+package "mizchi/webnn-examples/mnist"
 
 import {
   "mizchi/js/core",
@@ -25,7 +25,7 @@ pub async fn run_cached(Int) -> @core.Any
 // Errors
 
 // Types and methods
-pub(all) struct Fixture {
+pub struct Fixture {
   params : @model.MlpParams
   count : Int
   images : Array[Float]

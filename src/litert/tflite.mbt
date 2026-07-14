@@ -2,21 +2,21 @@
 pub(all) struct TfliteModel {}
 
 ///|
-pub(all) enum TfliteRuntimeDataType {
+pub enum TfliteRuntimeDataType {
   Float32
   UInt8(Array[Float], Array[Int], Int)
   Int8(Array[Float], Array[Int], Int)
 }
 
 ///|
-pub(all) struct TfliteRuntimeTensor {
+pub struct TfliteRuntimeTensor {
   name_ : String
   shape_ : @shape.Shape
   data_type_ : TfliteRuntimeDataType
 }
 
 ///|
-pub(all) struct TfliteRuntimeModel {
+pub struct TfliteRuntimeModel {
   model_ : LiteRtModel
   inputs_ : Array[TfliteRuntimeTensor]
   outputs_ : Array[TfliteRuntimeTensor]

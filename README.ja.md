@@ -68,7 +68,17 @@ just bench-mobilenet-v2
 [`moon.work`](./moon.work) により、公開ライブラリとブラウザ利用側を分離しています。
 
 - `.` は `mizchi/webnn` ライブラリモジュールです。各パッケージは `src/` 以下に置きます。
-- [`examples/playground`](./examples/playground) はリポジトリ内で利用する `mizchi/webnn-examples` アプリケーションモジュールです。ワークスペース内の `mizchi/webnn` に依存し、Playwright から使う browser API を公開します。
+- [`examples/playground`](./examples/playground) はリポジトリ内で利用する `mizchi/webnn-examples` アプリケーションモジュールです。ワークスペース内の `mizchi/webnn` に依存し、benchmark・MNIST fixture・Playwright から使う browser API を所有します。
+
+アプリケーションは実装packageへ直接依存せず、整理されたroot facadeをimportできます。
+
+```moonbit
+import {
+  "mizchi/webnn",
+}
+```
+
+root packageは、検証済みのshape、LiteRT/TFLite、WebNN graph、program、cache、runtimeのコントラクトを再公開します。モデル構築に特化したpackageは`mizchi/webnn/model`、`mizchi/webnn/bert`、`mizchi/webnn/backend/cpu`として引き続き利用できます。
 
 `just build` は playground アプリケーションを明示的にビルドします。MoonBit が生成する JavaScript entry point は `_build/js/release/build/mizchi/webnn-examples/app/app.js` で、[`public/index.html`](./public/index.html) から読み込みます。
 
@@ -130,6 +140,7 @@ backend/cpu          backend/webnn
 
 各層の責務は分離しています。
 
+- `mizchi/webnn`: 主要な推論コントラクトをまとめた公開facade
 - `shape`: shape 検証と演算後 shape の推論
 - `tensor`: backend 共通の演算コントラクト
 - `model`: backend 非依存のモデル定義
@@ -138,10 +149,10 @@ backend/cpu          backend/webnn
 - `webnn/raw`: WebNN JavaScript API の薄い FFI
 - `webnn/compat`: 現行 Chrome の `deviceType` と最新仕様の `accelerated` の差を吸収
 - `backend/webnn`: symbolic tensor、compile、program cache、execution pool、tensor lifecycle
-- `examples/playground/src/app`: Playwright から呼び出す利用側 browser API
-- `benchmark`: CPU/WebNN の正しさを比較しながら setup と steady-state を計測
+- `examples/playground/src/app`: Playwright から呼び出す責務別の利用側 browser API adapter
+- `examples/playground/src/benchmark`: CPU/WebNN の正しさを比較しながら setup と steady-state を計測
 - `litert`: named tensor、float32 constant、演算列を表す source-neutral な IR と `TensorOps` lowerer
-- `mnist`: 学習済みMLP weights・IDX loader・CPU/WebNN evaluation/benchmark
+- `examples/playground/src/mnist`: 学習済みMLP weights・IDX loader・CPU/WebNN evaluation/benchmark
 
 Transformer系の公開APIは、検証済みのconfig、backend非依存parameter、materialize済みmodelを分離します。
 

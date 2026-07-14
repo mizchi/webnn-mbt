@@ -22,14 +22,14 @@ pub suberror LiteRtError {
 pub fn LiteRtError::to_string(Self) -> String
 
 // Types and methods
-pub(all) struct LiteRtLoweredValue[T] {
+pub struct LiteRtLoweredValue[T] {
   name_ : String
   tensor_ : T
 }
 pub fn[T] LiteRtLoweredValue::name(Self[T]) -> String
 pub fn[T] LiteRtLoweredValue::tensor(Self[T]) -> T
 
-pub(all) struct LiteRtModel {
+pub struct LiteRtModel {
   values_ : Array[LiteRtValue]
   nodes_ : Array[LiteRtNode]
   output_names_ : Array[String]
@@ -62,7 +62,7 @@ pub(all) enum LiteRtNode {
   Transpose(String, String, Array[Int])
 }
 
-pub(all) struct LiteRtValue {
+pub struct LiteRtValue {
   name_ : String
   shape_ : @shape.Shape
   source_ : LiteRtValueSource
@@ -73,7 +73,7 @@ pub fn LiteRtValue::intermediate(String, @shape.Shape) -> Self raise LiteRtError
 pub fn LiteRtValue::name(Self) -> String
 pub fn LiteRtValue::shape(Self) -> @shape.Shape
 
-pub(all) enum LiteRtValueSource {
+pub enum LiteRtValueSource {
   Input
   Constant(Array[Float])
   Intermediate
@@ -84,13 +84,13 @@ pub(all) struct TfliteModel {
 pub fn TfliteModel::parse(Bytes) -> LiteRtModel raise LiteRtError
 pub fn TfliteModel::parse_runtime(Bytes) -> TfliteRuntimeModel raise LiteRtError
 
-pub(all) enum TfliteRuntimeDataType {
+pub enum TfliteRuntimeDataType {
   Float32
   UInt8(Array[Float], Array[Int], Int)
   Int8(Array[Float], Array[Int], Int)
 }
 
-pub(all) struct TfliteRuntimeModel {
+pub struct TfliteRuntimeModel {
   model_ : LiteRtModel
   inputs_ : Array[TfliteRuntimeTensor]
   outputs_ : Array[TfliteRuntimeTensor]
@@ -99,7 +99,7 @@ pub fn TfliteRuntimeModel::inputs(Self) -> Array[TfliteRuntimeTensor]
 pub fn TfliteRuntimeModel::model(Self) -> LiteRtModel
 pub fn TfliteRuntimeModel::outputs(Self) -> Array[TfliteRuntimeTensor]
 
-pub(all) struct TfliteRuntimeTensor {
+pub struct TfliteRuntimeTensor {
   name_ : String
   shape_ : @shape.Shape
   data_type_ : TfliteRuntimeDataType

@@ -1,5 +1,5 @@
 ///|
-pub(all) struct WebNNLoweredLiteRtGraph {
+pub struct WebNNLoweredLiteRtGraph {
   inputs_ : Array[WebNNInput]
   outputs_ : Array[@litert.LiteRtLoweredValue[WebNNTensor]]
 }

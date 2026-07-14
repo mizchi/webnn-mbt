@@ -1,10 +1,6 @@
 import {
-  "mizchi/js/core",
-  "mizchi/webnn/backend/cpu",
-  "mizchi/webnn/backend/webnn",
-  "mizchi/webnn/bert",
+  "mizchi/webnn/backend/webnn" @backend,
   "mizchi/webnn/litert",
-  "mizchi/webnn/model",
   "mizchi/webnn/shape",
   "mizchi/webnn/tensor",
   "mizchi/webnn/webnn/compat",

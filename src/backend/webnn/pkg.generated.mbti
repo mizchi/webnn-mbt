@@ -156,7 +156,7 @@ pub struct TfliteRunnerOutput {
 pub fn TfliteRunnerOutput::name(Self) -> String
 pub fn TfliteRunnerOutput::values(Self) -> TfliteRunnerValues
 
-pub(all) enum TfliteRunnerValues {
+pub enum TfliteRunnerValues {
   Float32(Array[Float])
   Quantized(Array[Int])
 }
@@ -176,7 +176,7 @@ pub fn WebNNCapabilities::preferred_input_layout(Self) -> @shape.InputLayout
 pub fn WebNNCapabilities::supported_operators(Self) -> Array[String]
 pub fn WebNNCapabilities::tensor_io_available(Self) -> Bool
 
-pub(all) enum WebNNContextContract {
+pub enum WebNNContextContract {
   Accelerated
   LegacyDeviceType
 } derive(Eq, @debug.Debug)
@@ -227,7 +227,7 @@ pub struct WebNNInput {
 }
 pub fn WebNNInput::tensor(Self) -> WebNNTensor
 
-pub(all) struct WebNNLoweredLiteRtGraph {
+pub struct WebNNLoweredLiteRtGraph {
   inputs_ : Array[WebNNInput]
   outputs_ : Array[@litert.LiteRtLoweredValue[WebNNTensor]]
 }

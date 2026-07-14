@@ -3,7 +3,7 @@
 ///
 /// The WebNN graph always uses float32 internally. Quantized keeps the
 /// caller-facing UINT8/INT8 representation at the TFLite boundary.
-pub(all) enum TfliteRunnerValues {
+pub enum TfliteRunnerValues {
   Float32(Array[Float])
   Quantized(Array[Int])
 }

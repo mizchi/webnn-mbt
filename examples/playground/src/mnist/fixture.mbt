@@ -8,7 +8,7 @@ let hidden_size : Int = 128
 let output_size : Int = 10
 
 ///|
-pub(all) struct Fixture {
+pub struct Fixture {
   params : @model.MlpParams
   count : Int
   images : Array[Float]

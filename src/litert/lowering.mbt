@@ -10,14 +10,14 @@ pub fn LiteRtError::to_string(self : LiteRtError) -> String {
 }
 
 ///|
-pub(all) enum LiteRtValueSource {
+pub enum LiteRtValueSource {
   Input
   Constant(Array[Float])
   Intermediate
 }
 
 ///|
-pub(all) struct LiteRtValue {
+pub struct LiteRtValue {
   name_ : String
   shape_ : @shape.Shape
   source_ : LiteRtValueSource
@@ -153,14 +153,14 @@ fn output_name(node : LiteRtNode) -> String {
 }
 
 ///|
-pub(all) struct LiteRtModel {
+pub struct LiteRtModel {
   values_ : Array[LiteRtValue]
   nodes_ : Array[LiteRtNode]
   output_names_ : Array[String]
 }
 
 ///|
-pub(all) struct LiteRtLoweredValue[T] {
+pub struct LiteRtLoweredValue[T] {
   name_ : String
   tensor_ : T
 }

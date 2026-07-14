@@ -68,7 +68,17 @@ just bench-mobilenet-v2
 [`moon.work`](./moon.work) separates the published library from its browser consumer:
 
 - `.` is the `mizchi/webnn` library module. Its packages live under `src/`.
-- [`examples/playground`](./examples/playground) is the repository-local `mizchi/webnn-examples` application module. It depends on the workspace copy of `mizchi/webnn` and exposes the browser API used by Playwright.
+- [`examples/playground`](./examples/playground) is the repository-local `mizchi/webnn-examples` application module. It depends on the workspace copy of `mizchi/webnn`, owns benchmark and MNIST fixture code, and exposes the browser API used by Playwright.
+
+Applications can import the curated root facade instead of depending directly on implementation packages:
+
+```moonbit
+import {
+  "mizchi/webnn",
+}
+```
+
+The root package re-exports the validated shape, LiteRT/TFLite, WebNN graph, program, cache, and runtime contracts. Specialized model-building packages remain available under `mizchi/webnn/model`, `mizchi/webnn/bert`, and `mizchi/webnn/backend/cpu`.
 
 `just build` builds the playground application explicitly. MoonBit writes its JavaScript entry point to `_build/js/release/build/mizchi/webnn-examples/app/app.js`, which [`public/index.html`](./public/index.html) loads.
 
@@ -130,6 +140,7 @@ eager execution      builds MLOperands
 
 Responsibilities are separated by layer:
 
+- `mizchi/webnn`: curated public facade for the primary inference contracts
 - `shape`: shape validation and result-shape inference
 - `tensor`: backend-neutral operation contracts
 - `model`: backend-independent model definitions
@@ -138,10 +149,10 @@ Responsibilities are separated by layer:
 - `webnn/raw`: thin FFI over the WebNN JavaScript API
 - `webnn/compat`: compatibility between Chrome's current `deviceType` API and the newer `accelerated` contract
 - `backend/webnn`: symbolic tensors, compilation, program cache, execution pools, and tensor lifecycle
-- `examples/playground/src/app`: consumer-side browser API called from Playwright
-- `benchmark`: setup and steady-state measurements with CPU/WebNN correctness comparisons
+- `examples/playground/src/app`: focused consumer-side browser API adapters called from Playwright
+- `examples/playground/src/benchmark`: setup and steady-state measurements with CPU/WebNN correctness comparisons
 - `litert`: source-neutral IR for named tensors, float32 constants, and operation sequences, plus a `TensorOps` lowerer
-- `mnist`: trained MLP weights, IDX loading, and CPU/WebNN evaluation and benchmarks
+- `examples/playground/src/mnist`: trained MLP weights, IDX loading, and CPU/WebNN evaluation and benchmarks
 
 The public Transformer API separates validated configuration, backend-independent parameters, and materialized models:
 
