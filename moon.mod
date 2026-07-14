@@ -19,3 +19,19 @@ description = "WebNN backend and TFLite inference runtime for MoonBit"
 source = "src"
 
 preferred_target = "js"
+
+options(
+  exclude: [
+    "examples",
+    "fixtures",
+    "public",
+    "scripts",
+    "tests",
+    "justfile",
+    "moon.work",
+    "package.json",
+    "playwright.config.ts",
+    "pnpm-lock.yaml",
+    "src/**/*_wbtest.mbt",
+  ],
+)
