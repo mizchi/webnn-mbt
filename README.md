@@ -18,6 +18,46 @@ The current scope is `float32`, fixed-shape inference with named multi-input/out
 - `reshape`
 - `transpose`
 
+## Quick start
+
+Add the package to a MoonBit project:
+
+```bash
+moon add mizchi/webnn
+```
+
+Import the root facade from your JavaScript-target package's `moon.pkg`:
+
+```moonbit
+import {
+  "mizchi/webnn",
+}
+
+supported_targets = "js"
+```
+
+The following graph adds a constant bias to a `float32` input. The returned
+`WebNNProgram` owns the graph and its prepared tensors, so destroy the program
+when inference is complete:
+
+```moonbit
+pub async fn add_bias() -> Array[Float] {
+  let graph = @webnn.WebNNGraphBuilder::new(
+    @webnn.DevicePreference::Npu,
+  )
+  let input = graph.input("input", @webnn.Shape::new([1, 2]))
+  let bias = graph.constant(@webnn.Shape::new([1, 2]), [10.0, 20.0])
+  let output = input.tensor().add(bias)
+  let program = graph.compile_program_single(input, "output", output)
+  defer program.destroy()
+  program.run([1.0, 2.0])
+}
+```
+
+Calling `add_bias()` in a WebNN-enabled browser returns `[11.0, 22.0]`.
+WebNN context creation, graph compilation, dispatch, and tensor reads are
+asynchronous, so the calling code must run in an `async` context.
+
 ## Requirements
 
 - MoonBit 0.10.3 or later

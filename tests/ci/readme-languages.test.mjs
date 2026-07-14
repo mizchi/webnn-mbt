@@ -31,3 +31,20 @@ test("README.md is English and README.ja.md is Japanese", async () => {
   assert.match(japanese, /^## 設計$/m);
   assert.match(japanese, /^## 制限$/m);
 });
+
+test("READMEs show a minimal inference using the root facade", async () => {
+  const english = await read("README.md");
+  const japanese = await read("README.ja.md");
+
+  for (const readme of [english, japanese]) {
+    assert.match(readme, /moon add mizchi\/webnn/);
+    assert.match(readme, /"mizchi\/webnn"/);
+    assert.match(readme, /@webnn\.WebNNGraphBuilder::new/);
+    assert.match(readme, /@webnn\.DevicePreference::Npu/);
+    assert.match(readme, /compile_program_single/);
+    assert.match(readme, /defer program\.destroy\(\)/);
+  }
+
+  assert.match(english, /^## Quick start$/m);
+  assert.match(japanese, /^## クイックスタート$/m);
+});

@@ -18,6 +18,46 @@ MoonBit向けのWebNN backendおよびTFLite inference runtimeです。低レベ
 - `reshape`
 - `transpose`
 
+## クイックスタート
+
+MoonBitプロジェクトにパッケージを追加します。
+
+```bash
+moon add mizchi/webnn
+```
+
+JavaScript targetのpackageで、`moon.pkg`からroot facadeをimportします。
+
+```moonbit
+import {
+  "mizchi/webnn",
+}
+
+supported_targets = "js"
+```
+
+次のgraphは、`float32` inputに定数biasを加算します。返される
+`WebNNProgram`がgraphと準備済みtensorを所有するため、推論が終わったら
+programを破棄します。
+
+```moonbit
+pub async fn add_bias() -> Array[Float] {
+  let graph = @webnn.WebNNGraphBuilder::new(
+    @webnn.DevicePreference::Npu,
+  )
+  let input = graph.input("input", @webnn.Shape::new([1, 2]))
+  let bias = graph.constant(@webnn.Shape::new([1, 2]), [10.0, 20.0])
+  let output = input.tensor().add(bias)
+  let program = graph.compile_program_single(input, "output", output)
+  defer program.destroy()
+  program.run([1.0, 2.0])
+}
+```
+
+WebNNを有効にしたbrowserで`add_bias()`を呼ぶと、`[11.0, 22.0]`が返ります。
+WebNN contextの作成、graph compile、dispatch、tensor readは非同期なので、
+呼び出し側も`async` contextで実行してください。
+
 ## 必要な環境
 
 - MoonBit 0.10.3 以降
