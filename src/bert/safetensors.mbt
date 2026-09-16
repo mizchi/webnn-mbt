@@ -65,11 +65,18 @@ extern "js" fn safetensors_header_dtype(
   #| (header, index) => header.entries[index].dtype
 
 ///|
-extern "js" fn safetensors_header_shape(
+/// The extern always uses FixedArray ...
+extern "js" fn ffi_safetensors_header_shape(
   header : @core.Any,
   index : Int,
-) -> Array[Int] =
+) -> FixedArray[Int] =
   #| (header, index) => header.entries[index].shape
+
+///|
+/// ... and the wrapper keeps the friendlier `Array[Int]`.
+fn safetensors_header_shape(header : @core.Any, index : Int) -> Array[Int] {
+  Array::from_fixed_array(ffi_safetensors_header_shape(header, index))
+}
 
 ///|
 extern "js" fn safetensors_header_start(header : @core.Any, index : Int) -> Int =
@@ -81,7 +88,7 @@ extern "js" fn safetensors_header_end(header : @core.Any, index : Int) -> Int =
 
 ///|
 fn read_safetensors_u32(bytes : Bytes, offset : Int) -> UInt {
-  for index = 0, value = UInt::default()
+  for index = 0, value = 0U
       index < 4
       index = index + 1, value = value |
         (bytes[offset + index].to_uint() << (index * 8)) {

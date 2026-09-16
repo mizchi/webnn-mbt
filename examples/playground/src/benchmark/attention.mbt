@@ -126,8 +126,8 @@ extern "js" fn make_attention_report(
   graph_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  cpu_samples_ms : Array[Double],
-  webnn_samples_ms : Array[Double],
+  cpu_samples_ms : FixedArray[Double],
+  webnn_samples_ms : FixedArray[Double],
   maximum_absolute_error : Float,
 ) -> @core.Any =
   #| (tokens, width, heads, maskMode, operationsPerSample, warmup, iterations, contextMs, graphMs, compileMs, prepareMs, cpuSamplesMs, webnnSamplesMs, maxAbsError) => ({
@@ -246,8 +246,8 @@ pub async fn self_attention(
     graph_ms,
     compile_ms,
     prepare_ms,
-    cpu_samples_ms,
-    webnn_samples_ms,
+    FixedArray::from_array(cpu_samples_ms),
+    FixedArray::from_array(webnn_samples_ms),
     max_abs_error(cpu_output, webnn_output),
   )
 }

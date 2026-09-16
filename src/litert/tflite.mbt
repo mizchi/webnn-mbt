@@ -607,7 +607,7 @@ fn parse_tensor(
   ) catch {
     error => raise LiteRtError(error.to_string())
   }
-  let buffer_index = tensor.u32(2, UInt::default()).reinterpret_as_int()
+  let buffer_index = tensor.u32(2, 0U).reinterpret_as_int()
   if buffer_index < 0 {
     raise LiteRtError("TFLite tensor buffer index is invalid")
   }
@@ -1682,7 +1682,7 @@ fn operator_nodes(
   tensors : Array[TfliteTensor],
   buffers : FlatBufferVector,
 ) -> TfliteLoweredOperator raise LiteRtError {
-  let code_index = operator.u32(0, UInt::default()).reinterpret_as_int()
+  let code_index = operator.u32(0, 0U).reinterpret_as_int()
   let code = operator_code(operator_codes, code_index)
   let inputs = vector_i32(required_vector(operator, 1, 4, "operator inputs"))
   let outputs = vector_i32(required_vector(operator, 2, 4, "operator outputs"))
@@ -1939,7 +1939,7 @@ fn operator_nodes(
 fn parse_tflite(bytes : Bytes) -> ParsedTfliteModel raise LiteRtError {
   let reader = FlatBufferReader::new(bytes)
   let model = reader.root_table()
-  let version = model.u32(0, UInt::default()).reinterpret_as_int()
+  let version = model.u32(0, 0U).reinterpret_as_int()
   if version < 3 {
     raise LiteRtError("TFLite schema version must be at least 3")
   }
@@ -1959,7 +1959,7 @@ fn parse_tflite(bytes : Bytes) -> ParsedTfliteModel raise LiteRtError {
   // operator name is the actionable compatibility boundary.
   for index in 0..<operators.length {
     let operator = table_at(operators, index, "operator")
-    let code_index = operator.u32(0, UInt::default()).reinterpret_as_int()
+    let code_index = operator.u32(0, 0U).reinterpret_as_int()
     let code = operator_code(operator_codes, code_index)
     if code.builtin == 32 {
       match code.custom {

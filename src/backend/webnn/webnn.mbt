@@ -376,27 +376,21 @@ pub async fn WebNNSession::run_named(
 pub async fn WebNNSession::prepare(self : WebNNSession) -> WebNNExecution {
   let inputs : Array[@nn.MLTensor] = []
   for spec in self.input_specs {
-    let input = self.context.create_tensor(spec.shape.dimensions(), true, false) catch {
-      error => {
-        inputs.each(fn(prepared) { prepared.destroy() })
-        raise error
-      }
-    }
+    errdefer inputs.each(fn(prepared) { prepared.destroy() })
+    let input = self.context.create_tensor(spec.shape.dimensions(), true, false)
     inputs.push(input)
   }
   let outputs : Array[@nn.MLTensor] = []
   for spec in self.output_specs {
+    errdefer {
+      inputs.each(fn(prepared) { prepared.destroy() })
+      outputs.each(fn(prepared) { prepared.destroy() })
+    }
     let output = self.context.create_tensor(
       spec.shape.dimensions(),
       false,
       true,
-    ) catch {
-      error => {
-        inputs.each(fn(prepared) { prepared.destroy() })
-        outputs.each(fn(prepared) { prepared.destroy() })
-        raise error
-      }
-    }
+    )
     outputs.push(output)
   }
   {

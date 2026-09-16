@@ -1,24 +1,24 @@
 ///|
 extern "js" fn run_program_pair(
   run : (Array[Float]) -> @core.Promise[Array[Float]],
-  first : Array[Float],
-  second : Array[Float],
+  first : FixedArray[Float],
+  second : FixedArray[Float],
 ) -> @core.Promise[Array[Array[Float]]] =
   #| (run, first, second) => Promise.all([run(first), run(second)])
 
 ///|
 extern "js" fn run_int_program_pair(
   run : (Array[Int]) -> @core.Promise[Array[Int]],
-  first : Array[Int],
-  second : Array[Int],
+  first : FixedArray[Int],
+  second : FixedArray[Int],
 ) -> @core.Promise[Array[Array[Int]]] =
   #| (run, first, second) => Promise.all([run(first), run(second)])
 
 ///|
 extern "js" fn make_program_concurrency_report(
-  results : Array[Array[Float]],
+  results : FixedArray[Array[Float]],
   rejected_run_recovered : Bool,
-  result_after_rejected_run : Array[Float],
+  result_after_rejected_run : FixedArray[Float],
   run_after_destroy_rejected : Bool,
 ) -> @core.Any =
   #| (results, rejectedRunRecovered, resultAfterRejectedRun, runAfterDestroyRejected) => ({
@@ -30,14 +30,14 @@ extern "js" fn make_program_concurrency_report(
 
 ///|
 extern "js" fn make_tflite_runner_cache_concurrency_report(
-  results : Array[Array[Int]],
+  results : FixedArray[Array[Int]],
   cache_size : Int,
 ) -> @core.Any =
   #| (results, cacheSize) => ({ results, cacheSize })
 
 ///|
 extern "js" fn make_execution_pool_report(
-  results : Array[Array[Float]],
+  results : FixedArray[Array[Float]],
   pool_size : Int,
   maximum_concurrency : Int,
   run_after_destroy_rejected : Bool,
@@ -97,7 +97,7 @@ extern "js" fn compile_gate_open(gate : CompileGate) -> Unit =
 
 ///|
 extern "js" fn make_program_cache_clear_race_report(
-  output : Array[Float],
+  output : FixedArray[Float],
   cache_hit : Bool,
   cache_size_after_clear : Int,
 ) -> @core.Any =
@@ -130,13 +130,17 @@ fn probe_program_cache_clear_during_compile() -> @core.Promise[@core.Any] {
     cache.clear() |> ignore
     compile_gate_open(gate)
     let (output, cache_hit) = pending.wait()
-    make_program_cache_clear_race_report(output, cache_hit, cache.length())
+    make_program_cache_clear_race_report(
+      FixedArray::from_array(output),
+      cache_hit,
+      cache.length(),
+    )
   })
 }
 
 ///|
 extern "js" fn make_tflite_runner_cache_clear_race_report(
-  output : Array[Float],
+  output : FixedArray[Float],
   cache_size_after_clear : Int,
   resident_bytes_after_clear : Int,
 ) -> @core.Any =
@@ -192,7 +196,7 @@ fn probe_tflite_runner_cache_clear_during_compile() -> @core.Promise[@core.Any] 
         )
     }
     make_tflite_runner_cache_clear_race_report(
-      output,
+      FixedArray::from_array(output),
       cache.length(),
       cache.resident_bytes(),
     )
@@ -216,7 +220,7 @@ fn probe_execution_pool() -> @core.Promise[@core.Any] {
       _ => false
     }
     make_execution_pool_report(
-      results,
+      FixedArray::from_array(results),
       program.pool_size(),
       program.maximum_concurrency(),
       run_after_destroy_rejected,
@@ -247,7 +251,10 @@ fn probe_concurrent_program() -> @core.Promise[@core.Any] {
       _ => false
     }
     make_program_concurrency_report(
-      results, rejected_run_recovered, result_after_rejected_run, run_after_destroy_rejected,
+      FixedArray::from_array(results),
+      rejected_run_recovered,
+      FixedArray::from_array(result_after_rejected_run),
+      run_after_destroy_rejected,
     )
   })
 }

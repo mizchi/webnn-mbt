@@ -55,20 +55,16 @@ pub async fn WebNNGraphBuilder::compile_litert_program_pool(
   model : @litert.LiteRtModel,
   pool_size : Int,
 ) -> WebNNProgram {
-  let lowered = self.lower_litert(model) catch {
-    error => {
-      self.destroy()
-      raise error
-    }
+  // Scoped to this block: the output binding below and
+  // `compile_program_pool_named` both destroy `self` on failure already.
+  let lowered = {
+    errdefer self.destroy()
+    self.lower_litert(model)
   }
   let outputs : Array[WebNNOutput] = []
   for lowered_output in lowered.outputs() {
-    let output = self.output(lowered_output.name(), lowered_output.tensor()) catch {
-      error => {
-        self.destroy()
-        raise error
-      }
-    }
+    errdefer self.destroy()
+    let output = self.output(lowered_output.name(), lowered_output.tensor())
     outputs.push(output)
   }
   self.compile_program_pool_named(lowered.inputs(), outputs, pool_size)

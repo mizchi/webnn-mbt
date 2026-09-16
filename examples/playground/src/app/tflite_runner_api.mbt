@@ -20,7 +20,10 @@ fn probe_tflite_runner_cache_concurrency() -> @core.Promise[@core.Any] {
       })
     }
     let results = run_int_program_pair(run, [3, 2], [4, 2]).wait()
-    make_tflite_runner_cache_concurrency_report(results, cache.length())
+    make_tflite_runner_cache_concurrency_report(
+      FixedArray::from_array(results),
+      cache.length(),
+    )
   })
 }
 
@@ -53,8 +56,8 @@ fn run_tflite_runner_named_add() -> @core.Promise[Array[Float]] {
 
 ///|
 extern "js" fn tflite_runner_multi_io_report(
-  names : Array[String],
-  outputs : Array[Array[Float]],
+  names : FixedArray[String],
+  outputs : FixedArray[Array[Float]],
 ) -> @core.Any =
   #| (names, outputs) => ({
   #|   names,
@@ -86,7 +89,10 @@ fn run_tflite_runner_two_input_two_output() -> @core.Promise[@core.Any] {
           )
       }
     }
-    tflite_runner_multi_io_report(names, outputs)
+    tflite_runner_multi_io_report(
+      FixedArray::from_array(names),
+      FixedArray::from_array(outputs),
+    )
   })
 }
 

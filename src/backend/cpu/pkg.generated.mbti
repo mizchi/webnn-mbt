@@ -25,7 +25,29 @@ pub struct CpuTensor {
   shape_ : @shape.Shape
   values_ : Array[Float]
 }
+pub fn CpuTensor::add(Self, Self) -> Self raise
+pub fn CpuTensor::average_pool2d(Self, @shape.Pool2dOptions) -> Self raise
+pub fn CpuTensor::clamp(Self, Float, Float) -> Self raise
+pub fn CpuTensor::concat(Self, Self, Int) -> Self raise
+pub fn CpuTensor::conv2d(Self, Self, @shape.Conv2dOptions) -> Self raise
+pub fn CpuTensor::div(Self, Self) -> Self raise
+pub fn CpuTensor::gather(Self, Array[Int], @shape.Shape, Int) -> Self raise
+pub fn CpuTensor::gelu(Self) -> Self raise
+pub fn CpuTensor::layer_normalization(Self, Self, Self, Array[Int], Float) -> Self raise
+pub fn CpuTensor::matmul(Self, Self) -> Self raise
+pub fn CpuTensor::max_pool2d(Self, @shape.Pool2dOptions) -> Self raise
+pub fn CpuTensor::mul(Self, Self) -> Self raise
 pub fn CpuTensor::new(@shape.Shape, Array[Float]) -> Self raise @tensor.TensorError
+pub fn CpuTensor::reduce_mean(Self, Array[Int], Bool) -> Self raise
+pub fn CpuTensor::relu(Self) -> Self raise
+pub fn CpuTensor::reshape(Self, @shape.Shape) -> Self raise
+pub fn CpuTensor::shape(Self) -> @shape.Shape
+pub fn CpuTensor::sigmoid(Self) -> Self raise
+pub fn CpuTensor::slice(Self, Array[Int], Array[Int]) -> Self raise
+pub fn CpuTensor::softmax(Self, Int) -> Self raise
+pub fn CpuTensor::sub(Self, Self) -> Self raise
+pub fn CpuTensor::tanh(Self) -> Self raise
+pub fn CpuTensor::transpose(Self, Array[Int]) -> Self raise
 pub fn CpuTensor::values(Self) -> Array[Float]
 pub impl @tensor.TensorOps for CpuTensor
 

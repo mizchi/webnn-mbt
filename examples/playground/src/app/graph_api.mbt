@@ -13,7 +13,7 @@ extern "js" fn make_webnn_capabilities_report(
   preferred_input_layout : String,
   op_support_limits_available : Bool,
   tensor_io_available : Bool,
-  supported_operators : Array[String],
+  supported_operators : FixedArray[String],
 ) -> @core.Any =
   #| (compatibilityMode, preferredInputLayout, opSupportLimitsAvailable, tensorIoAvailable, supportedOperators) => ({
   #|   compatibilityMode,
@@ -32,7 +32,7 @@ fn probe_webnn_capabilities() -> @core.Promise[@core.Any] {
       capabilities.preferred_input_layout().to_webnn_string(),
       capabilities.op_support_limits_available(),
       capabilities.tensor_io_available(),
-      capabilities.supported_operators(),
+      FixedArray::from_array(capabilities.supported_operators()),
     )
   })
 }

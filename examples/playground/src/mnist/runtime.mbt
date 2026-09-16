@@ -48,11 +48,11 @@ async fn compile_program_pool(
 ) -> @webnn.WebNNProgram {
   let builder = @webnn.WebNNGraphBuilder::new(preference)
   let input_binding = builder.input("input", input_shape)
-  let output = webnn_model(builder, params).forward(input_binding.tensor()) catch {
-    error => {
-      builder.destroy()
-      raise error
-    }
+  // Scoped to this block: `compile_program_pool_single` destroys the builder on
+  // its own failure paths.
+  let output = {
+    errdefer builder.destroy()
+    webnn_model(builder, params).forward(input_binding.tensor())
   }
   builder.compile_program_pool_single(
     input_binding, "output", output, pool_size,
@@ -79,8 +79,8 @@ extern "js" fn make_cached_report(
   batch_size : Int,
   cache_hit : Bool,
   cache_size : Int,
-  logits : Array[Float],
-  predicted : Array[Int],
+  logits : FixedArray[Float],
+  predicted : FixedArray[Int],
 ) -> @core.Any =
   #| (batchSize, cacheHit, cacheSize, logits, predictions) => ({
   #|   batchSize,
@@ -105,8 +105,8 @@ pub async fn run_cached(batch_size : Int) -> @core.Any {
     batch_size,
     cache_hit,
     program_cache.length(),
-    logits,
-    predictions(logits, batch_size),
+    FixedArray::from_array(logits),
+    FixedArray::from_array(predictions(logits, batch_size)),
   )
 }
 
@@ -121,8 +121,8 @@ extern "js" fn make_cache_benchmark_report(
   operations_per_sample : Int,
   warmup : Int,
   iterations : Int,
-  cold_samples_ms : Array[Double],
-  hit_samples_ms : Array[Double],
+  cold_samples_ms : FixedArray[Double],
+  hit_samples_ms : FixedArray[Double],
   cold_misses : Int,
   cache_size : Int,
   prediction_matches : Int,
@@ -218,8 +218,8 @@ pub async fn benchmark_cache(
     operations_per_sample,
     warmup,
     iterations,
-    cold_samples_ms,
-    hit_samples_ms,
+    FixedArray::from_array(cold_samples_ms),
+    FixedArray::from_array(hit_samples_ms),
     cold_misses,
     program_cache.length(),
     correct_count(

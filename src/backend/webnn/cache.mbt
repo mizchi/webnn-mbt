@@ -134,12 +134,8 @@ pub async fn WebNNProgramCache::run_or_compile(
   match self.compile_or_get(key, compile) {
     Retained(program, cache_hit) => (program.run(input_values), cache_hit)
     Transient(program) => {
-      let output = program.run(input_values) catch {
-        error => {
-          program.destroy()
-          raise error
-        }
-      }
+      errdefer program.destroy()
+      let output = program.run(input_values)
       program.destroy()
       (output, false)
     }
@@ -160,12 +156,8 @@ pub async fn WebNNProgramCache::run_named_or_compile(
   match self.compile_or_get(key, compile) {
     Retained(program, cache_hit) => (program.run_named(input_values), cache_hit)
     Transient(program) => {
-      let output = program.run_named(input_values) catch {
-        error => {
-          program.destroy()
-          raise error
-        }
-      }
+      errdefer program.destroy()
+      let output = program.run_named(input_values)
       program.destroy()
       (output, false)
     }

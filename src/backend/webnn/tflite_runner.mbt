@@ -839,12 +839,8 @@ async fn TfliteRunnerCache::run_with_compiler(
   match self.compile_or_get(key, model_byte_length, compile) {
     Retained(runner) => runner.run(input_values)
     Transient(runner) => {
-      let output = runner.run(input_values) catch {
-        error => {
-          runner.destroy()
-          raise error
-        }
-      }
+      errdefer runner.destroy()
+      let output = runner.run(input_values)
       runner.destroy()
       output
     }

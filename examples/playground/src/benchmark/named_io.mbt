@@ -26,8 +26,8 @@ extern "js" fn make_named_io_benchmark_report(
   two_compile_ms : Double,
   one_prepare_ms : Double,
   two_prepare_ms : Double,
-  one_output_samples_ms : Array[Double],
-  two_output_samples_ms : Array[Double],
+  one_output_samples_ms : FixedArray[Double],
+  two_output_samples_ms : FixedArray[Double],
   maximum_absolute_error : Float,
 ) -> @core.Any =
   #| (size, warmup, iterations, operationsPerSample, oneCompileMs, twoCompileMs, onePrepareMs, twoPrepareMs, oneOutputSamplesMs, twoOutputSamplesMs, maxAbsError) => ({
@@ -144,8 +144,8 @@ pub async fn named_io(size : Int, warmup : Int, iterations : Int) -> @core.Any {
     two.compile_ms,
     one.prepare_ms,
     two.prepare_ms,
-    one.samples_ms,
-    two.samples_ms,
+    FixedArray::from_array(one.samples_ms),
+    FixedArray::from_array(two.samples_ms),
     maximum_absolute_error,
   )
 }

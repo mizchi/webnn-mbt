@@ -17,9 +17,9 @@ fn run_grouped_conv() -> @core.Promise[Array[Float]] {
 ///|
 extern "js" fn make_preferred_layout_conv_report(
   preferred_input_layout : String,
-  input_shape : Array[Int],
-  filter_shape : Array[Int],
-  output : Array[Float],
+  input_shape : FixedArray[Int],
+  filter_shape : FixedArray[Int],
+  output : FixedArray[Float],
 ) -> @core.Any =
   #| (preferredInputLayout, inputShape, filterShape, output) => ({
   #|   preferredInputLayout,
@@ -64,9 +64,11 @@ fn run_preferred_layout_conv() -> @core.Promise[@core.Any] {
     defer program.destroy()
     make_preferred_layout_conv_report(
       input_layout.to_webnn_string(),
-      input_shape.dimensions(),
-      filter_shape.dimensions(),
-      program.run([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]),
+      FixedArray::from_array(input_shape.dimensions()),
+      FixedArray::from_array(filter_shape.dimensions()),
+      FixedArray::from_array(
+        program.run([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]),
+      ),
     )
   })
 }
@@ -133,8 +135,8 @@ fn benchmark_named_io(
 
 ///|
 extern "js" fn make_named_multi_io_report(
-  names : Array[String],
-  values : Array[Array[Float]],
+  names : FixedArray[String],
+  values : FixedArray[Array[Float]],
   duplicate_input_rejected : Bool,
   unknown_input_rejected : Bool,
   input_count_rejected : Bool,
@@ -220,8 +222,8 @@ fn run_named_multi_io() -> @core.Promise[@core.Any] {
       @webnn.WebNNNamedValues::new("x", [1.0, 2.0]),
     ])
     make_named_multi_io_report(
-      results.map(fn(result) { result.name() }),
-      results.map(fn(result) { result.values() }),
+      FixedArray::from_array(results.map(fn(result) { result.name() })),
+      FixedArray::from_array(results.map(fn(result) { result.values() })),
       duplicate_input_rejected,
       unknown_input_rejected,
       input_count_rejected,

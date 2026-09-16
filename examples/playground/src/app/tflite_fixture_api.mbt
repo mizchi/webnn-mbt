@@ -9,11 +9,11 @@ extern "js" fn fetch_tflite_fixture(url : String) -> @core.Promise[Bytes] =
 ///|
 extern "js" fn make_micro_speech_fixture_report(
   input_name : String,
-  input_shape : Array[Int],
+  input_shape : FixedArray[Int],
   output_name : String,
-  output_shape : Array[Int],
-  first : Array[Int],
-  second : Array[Int],
+  output_shape : FixedArray[Int],
+  first : FixedArray[Int],
+  second : FixedArray[Int],
   cache_size : Int,
 ) -> @core.Any =
   #| (inputName, inputShape, outputName, outputShape, first, second, cacheSize) => ({
@@ -60,11 +60,11 @@ fn run_micro_speech_fixture() -> @core.Promise[@core.Any] {
     ])
     make_micro_speech_fixture_report(
       input.name(),
-      input.shape().dimensions(),
+      FixedArray::from_array(input.shape().dimensions()),
       output.name(),
-      output.shape().dimensions(),
-      quantized_tflite_runner_output(first_outputs[0]),
-      quantized_tflite_runner_output(second_outputs[0]),
+      FixedArray::from_array(output.shape().dimensions()),
+      FixedArray::from_array(quantized_tflite_runner_output(first_outputs[0])),
+      FixedArray::from_array(quantized_tflite_runner_output(second_outputs[0])),
       runtime.cache_size(),
     )
   })
@@ -96,11 +96,11 @@ fn run_person_detection_fixture() -> @core.Promise[@core.Any] {
     ])
     make_micro_speech_fixture_report(
       input.name(),
-      input.shape().dimensions(),
+      FixedArray::from_array(input.shape().dimensions()),
       output.name(),
-      output.shape().dimensions(),
-      quantized_tflite_runner_output(first_outputs[0]),
-      quantized_tflite_runner_output(second_outputs[0]),
+      FixedArray::from_array(output.shape().dimensions()),
+      FixedArray::from_array(quantized_tflite_runner_output(first_outputs[0])),
+      FixedArray::from_array(quantized_tflite_runner_output(second_outputs[0])),
       runtime.cache_size(),
     )
   })
@@ -108,8 +108,8 @@ fn run_person_detection_fixture() -> @core.Promise[@core.Any] {
 
 ///|
 extern "js" fn make_mobilenet_v2_fixture_report(
-  input_shape : Array[Int],
-  output_shape : Array[Int],
+  input_shape : FixedArray[Int],
+  output_shape : FixedArray[Int],
 ) -> @core.Any =
   #| (inputShape, outputShape) => ({ inputShape, outputShape })
 
@@ -121,10 +121,10 @@ extern "js" fn performance_now() -> Double =
 extern "js" fn make_mobilenet_v2_benchmark_report(
   warmup : Int,
   iterations : Int,
-  cold_samples_ms : Array[Double],
-  hit_samples_ms : Array[Double],
-  prepared_hit_samples_ms : Array[Double],
-  output : Array[Int],
+  cold_samples_ms : FixedArray[Double],
+  hit_samples_ms : FixedArray[Double],
+  prepared_hit_samples_ms : FixedArray[Double],
+  output : FixedArray[Int],
   cache_size : Int,
 ) -> @core.Any =
   #| (warmup, iterations, coldSamplesMs, hitSamplesMs, preparedHitSamplesMs, output, cacheSize) => ({
@@ -146,8 +146,8 @@ fn probe_mobilenet_v2_fixture() -> @core.Promise[@core.Any] {
       model => model
     }
     make_mobilenet_v2_fixture_report(
-      model.inputs()[0].shape().dimensions(),
-      model.outputs()[0].shape().dimensions(),
+      FixedArray::from_array(model.inputs()[0].shape().dimensions()),
+      FixedArray::from_array(model.outputs()[0].shape().dimensions()),
     )
   })
 }
@@ -179,11 +179,11 @@ fn run_mobilenet_v2_fixture() -> @core.Promise[@core.Any] {
     ])
     make_micro_speech_fixture_report(
       input.name(),
-      input.shape().dimensions(),
+      FixedArray::from_array(input.shape().dimensions()),
       output.name(),
-      output.shape().dimensions(),
-      quantized_tflite_runner_output(first_outputs[0]),
-      quantized_tflite_runner_output(second_outputs[0]),
+      FixedArray::from_array(output.shape().dimensions()),
+      FixedArray::from_array(quantized_tflite_runner_output(first_outputs[0])),
+      FixedArray::from_array(quantized_tflite_runner_output(second_outputs[0])),
       runtime.cache_size(),
     )
   })
@@ -258,10 +258,10 @@ fn benchmark_mobilenet_v2_fixture(
     make_mobilenet_v2_benchmark_report(
       warmup,
       iterations,
-      cold_samples_ms,
-      hit_samples_ms,
-      prepared_hit_samples_ms,
-      output,
+      FixedArray::from_array(cold_samples_ms),
+      FixedArray::from_array(hit_samples_ms),
+      FixedArray::from_array(prepared_hit_samples_ms),
+      FixedArray::from_array(output),
       runtime.cache_size(),
     )
   })

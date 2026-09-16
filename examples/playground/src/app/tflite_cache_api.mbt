@@ -3,8 +3,8 @@ let tflite_runner_cache : @webnn.TfliteRunnerCache = @webnn.TfliteRunnerCache::n
 
 ///|
 extern "js" fn tflite_runner_cache_report(
-  first : Array[Int],
-  second : Array[Int],
+  first : FixedArray[Int],
+  second : FixedArray[Int],
   cache_size : Int,
 ) -> @core.Any =
   #| (first, second, cacheSize) => ({ first, second, cacheSize })
@@ -40,8 +40,8 @@ fn run_tflite_runner_cache_per_axis_int8_raw() -> @core.Promise[@core.Any] {
       [@webnn.TfliteRunnerInput::quantized("tensor_0", [3, 2])],
     )
     tflite_runner_cache_report(
-      quantized_tflite_runner_output(first_outputs[0]),
-      quantized_tflite_runner_output(second_outputs[0]),
+      FixedArray::from_array(quantized_tflite_runner_output(first_outputs[0])),
+      FixedArray::from_array(quantized_tflite_runner_output(second_outputs[0])),
       tflite_runner_cache.length(),
     )
   })
@@ -61,8 +61,8 @@ fn run_tflite_runtime_cache_per_axis_int8_raw() -> @core.Promise[@core.Any] {
       @webnn.TfliteRunnerInput::quantized("tensor_0", [3, 2]),
     ])
     tflite_runner_cache_report(
-      quantized_tflite_runner_output(first_outputs[0]),
-      quantized_tflite_runner_output(second_outputs[0]),
+      FixedArray::from_array(quantized_tflite_runner_output(first_outputs[0])),
+      FixedArray::from_array(quantized_tflite_runner_output(second_outputs[0])),
       runtime.cache_size(),
     )
   })
@@ -85,7 +85,7 @@ fn run_tflite_cpu_per_axis_int8_raw() -> @core.Promise[Array[Int]] {
 
 ///|
 extern "js" fn tflite_runtime_cpu_fallback_report(
-  output : Array[Int],
+  output : FixedArray[Int],
   misses : Int,
   entries : Int,
   cpu_fallbacks : Int,
@@ -113,7 +113,7 @@ fn run_tflite_runtime_cpu_fallback_per_axis_int8_raw() -> @core.Promise[
     )
     let metrics = runtime.metrics()
     tflite_runtime_cpu_fallback_report(
-      quantized_tflite_runner_output(outputs[0]),
+      FixedArray::from_array(quantized_tflite_runner_output(outputs[0])),
       metrics.misses(),
       metrics.entries(),
       metrics.cpu_fallbacks(),
@@ -173,8 +173,8 @@ fn probe_tflite_runtime_policy() -> @core.Promise[@core.Any] {
 
 ///|
 extern "js" fn tflite_runtime_cpu_fallback_cache_report(
-  first : Array[Int],
-  second : Array[Int],
+  first : FixedArray[Int],
+  second : FixedArray[Int],
   cpu_fallbacks : Int,
   cpu_cache_hits : Int,
   cpu_cache_misses : Int,
@@ -208,8 +208,8 @@ fn probe_tflite_runtime_cpu_fallback_cache() -> @core.Promise[@core.Any] {
     let second = runtime.run_tflite(bytes, inputs)
     let metrics = runtime.metrics()
     tflite_runtime_cpu_fallback_cache_report(
-      quantized_tflite_runner_output(first[0]),
-      quantized_tflite_runner_output(second[0]),
+      FixedArray::from_array(quantized_tflite_runner_output(first[0])),
+      FixedArray::from_array(quantized_tflite_runner_output(second[0])),
       metrics.cpu_fallbacks(),
       metrics.cpu_cache_hits(),
       metrics.cpu_cache_misses(),

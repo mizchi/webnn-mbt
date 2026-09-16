@@ -1,7 +1,7 @@
 ///|
 extern "js" fn make_test_safetensors(
   header : String,
-  values : Array[Float],
+  values : FixedArray[Float],
 ) -> Bytes =
   #| (header, values) => {
   #|   const encoded = new TextEncoder().encode(header);

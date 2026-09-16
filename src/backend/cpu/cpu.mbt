@@ -155,6 +155,38 @@ fn elementwise(
 }
 
 ///|
+/// Make the `TensorOps` methods callable as `tensor.add(..)` on a concrete
+/// `CpuTensor`. Without this they are only reachable by implicit promotion from
+/// the impl below, which the compiler deprecates.
+///
+/// Generic code bound by `@tensor.TensorOps` resolves through the bound and
+/// needs no such declaration; this is for the direct, concrete call sites.
+pub extend CpuTensor with @tensor.TensorOps::{
+  shape,
+  add,
+  sub,
+  mul,
+  div,
+  reduce_mean,
+  gather,
+  slice,
+  gelu,
+  layer_normalization,
+  concat,
+  matmul,
+  conv2d,
+  max_pool2d,
+  average_pool2d,
+  sigmoid,
+  tanh,
+  clamp,
+  relu,
+  softmax,
+  reshape,
+  transpose,
+}
+
+///|
 pub impl @tensor.TensorOps for CpuTensor with fn shape(self : CpuTensor) -> @shape.Shape {
   self.shape_
 }

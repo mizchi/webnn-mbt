@@ -25,7 +25,7 @@ extern "js" fn fetch_bytes(url : String) -> @core.Promise[Bytes] =
 
 ///|
 fn read_u32_le(bytes : Bytes, offset : Int) -> UInt {
-  for index = 0, value = UInt::default()
+  for index = 0, value = 0U
       index < 4
       index = index + 1, value = value |
         (bytes[offset + index].to_uint() << (index * 8)) {
@@ -37,7 +37,7 @@ fn read_u32_le(bytes : Bytes, offset : Int) -> UInt {
 
 ///|
 fn read_u32_be(bytes : Bytes, offset : Int) -> UInt {
-  for index = 0, value = UInt::default()
+  for index = 0, value = 0U
       index < 4
       index = index + 1, value = value |
         (bytes[offset + index].to_uint() << ((3 - index) * 8)) {

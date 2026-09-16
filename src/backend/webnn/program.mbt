@@ -38,11 +38,11 @@ pub async fn WebNNGraphBuilder::compile_program_pool_single(
   output : WebNNTensor,
   pool_size : Int,
 ) -> WebNNProgram {
-  let named_output = self.output(output_name, output) catch {
-    error => {
-      self.destroy()
-      raise error
-    }
+  // Scoped to this block: `compile_program_pool_named` destroys `self` on its
+  // own failure paths, so a builder-scoped `errdefer` would destroy twice.
+  let named_output = {
+    errdefer self.destroy()
+    self.output(output_name, output)
   }
   self.compile_program_pool_named([input], [named_output], pool_size)
 }
@@ -63,21 +63,19 @@ pub async fn WebNNGraphBuilder::compile_program_pool_named(
       "WebNN program execution pool size must be positive",
     )
   }
-  let session = self.compile_named(inputs, outputs) catch {
-    error => {
-      self.destroy()
-      raise error
-    }
+  // Scoped to this block, so it does not also fire for a `prepare()` failure
+  // below -- that path destroys `self` itself.
+  let session = {
+    errdefer self.destroy()
+    self.compile_named(inputs, outputs)
   }
   let executions : Array[WebNNExecution] = []
   for _ in 0..<pool_size {
-    let execution = session.prepare() catch {
-      error => {
-        executions.each(fn(prepared) { prepared.destroy() })
-        self.destroy()
-        raise error
-      }
+    errdefer {
+      executions.each(fn(prepared) { prepared.destroy() })
+      self.destroy()
     }
+    let execution = session.prepare()
     executions.push(execution)
   }
   { owner: self, executions, scheduler: new_program_scheduler(pool_size), }

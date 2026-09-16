@@ -2,25 +2,25 @@
 package "mizchi/webnn-examples/mnist"
 
 import {
-  "mizchi/js/core",
+  "mizchi/js_core",
   "mizchi/webnn/model",
   "mizchi/webnn/tensor",
 }
 
 // Values
-pub async fn benchmark(Int, Int, Int) -> @core.Any
+pub async fn benchmark(Int, Int, Int) -> @js_core.Any
 
-pub async fn benchmark_cache(Int, Int, Int) -> @core.Any
+pub async fn benchmark_cache(Int, Int, Int) -> @js_core.Any
 
-pub async fn benchmark_pool(Int, Int, Int, Int) -> @core.Any
+pub async fn benchmark_pool(Int, Int, Int, Int) -> @js_core.Any
 
 pub fn clear_program_cache() -> Int
 
-pub async fn evaluate(Int) -> @core.Any
+pub async fn evaluate(Int) -> @js_core.Any
 
 pub async fn load_fixture() -> Fixture
 
-pub async fn run_cached(Int) -> @core.Any
+pub async fn run_cached(Int) -> @js_core.Any
 
 // Errors
 

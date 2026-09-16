@@ -123,10 +123,10 @@ extern "js" fn make_bert_safetensors_fixture_report(
   file_bytes : Int,
   tensor_count : Int,
   layers : Int,
-  input_shape : Array[Int],
-  output_shape : Array[Int],
-  cpu_output : Array[Float],
-  webnn_output : Array[Float],
+  input_shape : FixedArray[Int],
+  output_shape : FixedArray[Int],
+  cpu_output : FixedArray[Float],
+  webnn_output : FixedArray[Float],
   maximum_absolute_error : Float,
 ) -> @core.Any =
   #| (fileBytes, tensorCount, layers, inputShape, outputShape, cpuOutput, webnnOutput, maxAbsError) => ({
@@ -194,10 +194,10 @@ fn run_bert_safetensors_fixture() -> @core.Promise[@core.Any] {
       bytes.length(),
       tensors.length(),
       config.layers(),
-      input_shape.dimensions(),
-      output.shape().dimensions(),
-      cpu_output,
-      webnn_output,
+      FixedArray::from_array(input_shape.dimensions()),
+      FixedArray::from_array(output.shape().dimensions()),
+      FixedArray::from_array(cpu_output),
+      FixedArray::from_array(webnn_output),
       bert_fixture_max_abs_error(cpu_output, webnn_output),
     )
   })

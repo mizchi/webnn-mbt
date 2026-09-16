@@ -28,8 +28,8 @@ extern "js" fn make_litert_benchmark_report(
   lower_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  samples_ms : Array[Double],
-  output : Array[Float],
+  samples_ms : FixedArray[Double],
+  output : FixedArray[Float],
 ) -> @core.Any =
   #| (warmup, iterations, operationsPerSample, contextMs, lowerMs, compileMs, prepareMs, samplesMs, output) => ({
   #|   warmup,
@@ -94,8 +94,15 @@ pub async fn litert_linear(warmup : Int, iterations : Int) -> @core.Any {
     )
   }
   make_litert_benchmark_report(
-    warmup, iterations, operations_per_sample, context_ms, lower_ms, compile_ms,
-    prepare_ms, samples_ms, output,
+    warmup,
+    iterations,
+    operations_per_sample,
+    context_ms,
+    lower_ms,
+    compile_ms,
+    prepare_ms,
+    FixedArray::from_array(samples_ms),
+    FixedArray::from_array(output),
   )
 }
 
@@ -144,8 +151,8 @@ extern "js" fn make_tflite_benchmark_report(
   lower_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  samples_ms : Array[Double],
-  output : Array[Float],
+  samples_ms : FixedArray[Double],
+  output : FixedArray[Float],
 ) -> @core.Any =
   #| (warmup, iterations, operationsPerSample, parseMs, contextMs, lowerMs, compileMs, prepareMs, samplesMs, output) => ({
   #|   warmup,
@@ -217,8 +224,16 @@ pub async fn tflite_fully_connected(
     )
   }
   make_tflite_benchmark_report(
-    warmup, iterations, operations_per_sample, parse_ms, context_ms, lower_ms, compile_ms,
-    prepare_ms, samples_ms, output,
+    warmup,
+    iterations,
+    operations_per_sample,
+    parse_ms,
+    context_ms,
+    lower_ms,
+    compile_ms,
+    prepare_ms,
+    FixedArray::from_array(samples_ms),
+    FixedArray::from_array(output),
   )
 }
 
@@ -277,8 +292,16 @@ pub async fn tflite_sub(warmup : Int, iterations : Int) -> @core.Any {
     )
   }
   make_tflite_benchmark_report(
-    warmup, iterations, operations_per_sample, parse_ms, context_ms, lower_ms, compile_ms,
-    prepare_ms, samples_ms, output,
+    warmup,
+    iterations,
+    operations_per_sample,
+    parse_ms,
+    context_ms,
+    lower_ms,
+    compile_ms,
+    prepare_ms,
+    FixedArray::from_array(samples_ms),
+    FixedArray::from_array(output),
   )
 }
 
@@ -342,8 +365,16 @@ pub async fn tflite_depthwise_conv2d(
     )
   }
   make_tflite_benchmark_report(
-    warmup, iterations, operations_per_sample, parse_ms, context_ms, lower_ms, compile_ms,
-    prepare_ms, samples_ms, output,
+    warmup,
+    iterations,
+    operations_per_sample,
+    parse_ms,
+    context_ms,
+    lower_ms,
+    compile_ms,
+    prepare_ms,
+    FixedArray::from_array(samples_ms),
+    FixedArray::from_array(output),
   )
 }
 
@@ -403,8 +434,16 @@ pub async fn tflite_max_pool2d(warmup : Int, iterations : Int) -> @core.Any {
     )
   }
   make_tflite_benchmark_report(
-    warmup, iterations, operations_per_sample, parse_ms, context_ms, lower_ms, compile_ms,
-    prepare_ms, samples_ms, output,
+    warmup,
+    iterations,
+    operations_per_sample,
+    parse_ms,
+    context_ms,
+    lower_ms,
+    compile_ms,
+    prepare_ms,
+    FixedArray::from_array(samples_ms),
+    FixedArray::from_array(output),
   )
 }
 
@@ -473,8 +512,16 @@ pub async fn tflite_per_axis_int8_raw(
     )
   }
   make_tflite_benchmark_report(
-    warmup, iterations, operations_per_sample, parse_ms, context_ms, lower_ms, compile_ms,
-    prepare_ms, samples_ms, output,
+    warmup,
+    iterations,
+    operations_per_sample,
+    parse_ms,
+    context_ms,
+    lower_ms,
+    compile_ms,
+    prepare_ms,
+    FixedArray::from_array(samples_ms),
+    FixedArray::from_array(output),
   )
 }
 
@@ -483,9 +530,9 @@ extern "js" fn make_tflite_runner_cache_benchmark_report(
   warmup : Int,
   iterations : Int,
   hit_operations_per_sample : Int,
-  cold_samples_ms : Array[Double],
-  hit_samples_ms : Array[Double],
-  output : Array[Int],
+  cold_samples_ms : FixedArray[Double],
+  hit_samples_ms : FixedArray[Double],
+  output : FixedArray[Int],
   cache_size : Int,
 ) -> @core.Any =
   #| (warmup, iterations, hitOperationsPerSample, coldSamplesMs, hitSamplesMs, output, cacheSize) => ({
@@ -603,9 +650,9 @@ pub async fn tflite_runner_cache_per_axis_int8_raw(
     warmup,
     iterations,
     hit_operations_per_sample,
-    cold_samples_ms,
-    hit_samples_ms,
-    output,
+    FixedArray::from_array(cold_samples_ms),
+    FixedArray::from_array(hit_samples_ms),
+    FixedArray::from_array(output),
     cache.length(),
   )
 }
