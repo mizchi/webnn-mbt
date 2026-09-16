@@ -25,7 +25,9 @@ fn benchmark_mnist(
   warmup : Int,
   iterations : Int,
 ) -> @core.Promise[@core.Any] {
-  @core.from_async(async fn() { @mnist.benchmark(batch_size, warmup, iterations) })
+  @core.from_async(async fn() {
+    @mnist.benchmark(batch_size, warmup, iterations)
+  })
 }
 
 ///|

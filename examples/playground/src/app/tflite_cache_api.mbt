@@ -97,7 +97,9 @@ extern "js" fn tflite_runtime_cpu_fallback_report(
 ///|
 /// Exercise the explicit CPU fallback policy. Tests temporarily hide
 /// navigator.ml so the initial WebNN compile fails before this runner executes.
-fn run_tflite_runtime_cpu_fallback_per_axis_int8_raw() -> @core.Promise[@core.Any] {
+fn run_tflite_runtime_cpu_fallback_per_axis_int8_raw() -> @core.Promise[
+  @core.Any,
+] {
   @core.from_async(async fn() {
     let runtime = @webnn.WebNNRuntime::new_with_cpu_fallback(
       @compat.DevicePreference::Npu,

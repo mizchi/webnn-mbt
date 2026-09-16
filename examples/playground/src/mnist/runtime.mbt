@@ -5,7 +5,7 @@
 let mnist_graph_hash : String = "mnist-mlp-784x128x10-v1+weights-sha256:1f8c4f957e8f71e545f06d64ddf1a132202229e24c374e9ce6bc426f5a396424"
 
 ///|
-let cached_fixture : Ref[Fixture?] = { val: None }
+let cached_fixture : Ref[Fixture?] = { val: None, }
 
 ///|
 let program_cache : @webnn.WebNNProgramCache = @webnn.WebNNProgramCache::new()

@@ -74,7 +74,7 @@ fn parse_params(bytes : Bytes) -> @model.MlpParams raise @tensor.TensorError {
   let weight2 = floats_from(bytes, offset, weight2_count)
   offset = offset + weight2_count * 4
   let bias2 = floats_from(bytes, offset, bias2_count)
-  { weight1, bias1, weight2, bias2 }
+  { weight1, bias1, weight2, bias2, }
 }
 
 ///|
@@ -124,7 +124,7 @@ pub async fn load_fixture() -> Fixture {
       "MNIST fixture count mismatch: images={image_count}, labels={label_count}",
     )
   }
-  { params, count: image_count, images, labels }
+  { params, count: image_count, images, labels, }
 }
 
 ///|

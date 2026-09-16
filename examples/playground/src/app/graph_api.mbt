@@ -45,7 +45,7 @@ fn run_cpu_linear() -> @core.Promise[Array[Float]] {
       1.0, 2.0, 3.0, 4.0,
     ])
     let bias = @cpu.CpuTensor::new(@shape.Shape::new([2]), [1.0, 1.0])
-    @model.Linear::{ weight, bias }.forward(input).values()
+    @model.Linear::{ weight, bias, }.forward(input).values()
   })
 }
 
@@ -93,7 +93,7 @@ fn run_linear() -> @core.Promise[Array[Float]] {
     let input = input_binding.tensor()
     let weight = graph.constant(@shape.Shape::new([2, 2]), [1.0, 2.0, 3.0, 4.0])
     let bias = graph.constant(@shape.Shape::new([2]), [1.0, 1.0])
-    let linear = @model.Linear::{ weight, bias }
+    let linear = @model.Linear::{ weight, bias, }
     let output = linear.forward(input)
     let session = graph.compile_single(input_binding, "output", output)
     session.run([1.0, 2.0])

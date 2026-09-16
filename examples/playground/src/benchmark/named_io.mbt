@@ -98,7 +98,7 @@ async fn measure_named_outputs(
       (performance_now() - start) / Double::from_int(operations_per_sample),
     )
   }
-  { compile_ms, prepare_ms, samples_ms, results }
+  { compile_ms, prepare_ms, samples_ms, results, }
 }
 
 ///|

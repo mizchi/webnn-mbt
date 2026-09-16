@@ -79,7 +79,9 @@ extern "js" fn expose_tflite_runtime_api(
   benchmark_mobilenet_v2_fixture : (Int, Int) -> @core.Promise[@core.Any],
   probe_audio_preprocessor_fixture : () -> @core.Promise[@core.Any],
   probe_tflite_runner_cache_concurrency : () -> @core.Promise[@core.Any],
-  probe_tflite_runner_cache_clear_during_compile : () -> @core.Promise[@core.Any],
+  probe_tflite_runner_cache_clear_during_compile : () -> @core.Promise[
+    @core.Any,
+  ],
   run_tflite_runner_named_add : () -> @core.Promise[Array[Float]],
   run_tflite_runner_two_input_two_output : () -> @core.Promise[@core.Any],
 ) -> Unit =
@@ -133,7 +135,9 @@ extern "js" fn expose_benchmark_api(
   ],
   benchmark_named_io : (Int, Int, Int) -> @core.Promise[@core.Any],
   benchmark_tiny_cnn : (Int, Int, Int) -> @core.Promise[@core.Any],
-  benchmark_tiny_cnn_layout : (String, Int, Int, Int) -> @core.Promise[@core.Any],
+  benchmark_tiny_cnn_layout : (String, Int, Int, Int) -> @core.Promise[
+    @core.Any,
+  ],
 ) -> Unit =
   #| (benchmarkLiteRtLinear, benchmarkTfliteFullyConnected, benchmarkTfliteSub, benchmarkTfliteDepthwiseConv2d, benchmarkTfliteMaxPool2d, benchmarkTflitePerAxisInt8Raw, benchmarkTfliteRunnerCachePerAxisInt8Raw, benchmarkMatmul, benchmarkTransformerBlock, benchmarkSelfAttention, benchmarkTransformerEncoder, benchmarkTransformerEncoderStack, benchmarkBertEncoder, benchmarkNamedIo, benchmarkTinyCnn, benchmarkTinyCnnLayout) => {
   #|   globalThis.webnnPlayground ??= {};

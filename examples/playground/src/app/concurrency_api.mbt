@@ -56,7 +56,7 @@ async fn compile_probe_program(pool_size : Int) -> @webnn.WebNNProgram {
   let input_binding = builder.input("input", input_shape)
   let weight = builder.constant(@shape.Shape::new([2, 2]), [1.0, 2.0, 3.0, 4.0])
   let bias = builder.constant(@shape.Shape::new([2]), [1.0, 1.0])
-  let output = @model.Linear::{ weight, bias }.forward(input_binding.tensor())
+  let output = @model.Linear::{ weight, bias, }.forward(input_binding.tensor())
   builder.compile_program_pool_single(
     input_binding, "output", output, pool_size,
   )

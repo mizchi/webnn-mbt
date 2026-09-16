@@ -77,7 +77,9 @@ fn benchmark_tiny_cnn(
   warmup : Int,
   iterations : Int,
 ) -> @core.Promise[@core.Any] {
-  @core.from_async(async fn() { @bench.tiny_cnn(batch_size, warmup, iterations) })
+  @core.from_async(async fn() {
+    @bench.tiny_cnn(batch_size, warmup, iterations)
+  })
 }
 
 ///|
