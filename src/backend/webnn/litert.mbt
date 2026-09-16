@@ -32,7 +32,7 @@ pub fn WebNNGraphBuilder::lower_litert(
     },
     (_name, shape, values) => self.constant(shape, values),
   )
-  { inputs_: inputs, outputs_: outputs }
+  { inputs_: inputs, outputs_: outputs, }
 }
 
 ///| Lower, compile, and prepare a reusable WebNN program for a LiteRT model.

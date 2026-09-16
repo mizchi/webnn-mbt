@@ -80,7 +80,7 @@ pub async fn WebNNGraphBuilder::compile_program_pool_named(
     }
     executions.push(execution)
   }
-  { owner: self, executions, scheduler: new_program_scheduler(pool_size) }
+  { owner: self, executions, scheduler: new_program_scheduler(pool_size), }
 }
 
 ///|
@@ -95,7 +95,7 @@ pub async fn WebNNProgram::run(
     )
   }
   let results = self.run_named([
-    { name_: execution.input_specs[0].name, values_: input_values },
+    { name_: execution.input_specs[0].name, values_: input_values, },
   ])
   results[0].values_
 }
@@ -106,7 +106,9 @@ pub async fn WebNNProgram::run_named(
   input_values : Array[WebNNNamedValues],
 ) -> Array[WebNNNamedValues] {
   enqueue_program_run(self.scheduler, fn(slot) {
-    @core.from_async(async fn() { self.executions[slot].run_named(input_values) })
+    @core.from_async(async fn() {
+      self.executions[slot].run_named(input_values)
+    })
   }).wait()
 }
 

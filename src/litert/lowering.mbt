@@ -36,7 +36,7 @@ pub fn LiteRtValue::input(
   shape : @shape.Shape,
 ) -> LiteRtValue raise LiteRtError {
   validate_name(name)
-  { name_: name, shape_: shape, source_: Input }
+  { name_: name, shape_: shape, source_: Input, }
 }
 
 ///|
@@ -51,7 +51,7 @@ pub fn LiteRtValue::constant(
       "LiteRT constant \{name} has \{values.length()} values for shape \{shape.to_string()}",
     )
   }
-  { name_: name, shape_: shape, source_: Constant(values.copy()) }
+  { name_: name, shape_: shape, source_: Constant(values.copy()), }
 }
 
 ///|
@@ -60,7 +60,7 @@ pub fn LiteRtValue::intermediate(
   shape : @shape.Shape,
 ) -> LiteRtValue raise LiteRtError {
   validate_name(name)
-  { name_: name, shape_: shape, source_: Intermediate }
+  { name_: name, shape_: shape, source_: Intermediate, }
 }
 
 ///|
@@ -491,6 +491,6 @@ pub fn[T : @tensor.TensorOps] LiteRtModel::lower(
     tensors[output] = tensor
   }
   self.output_names_.map(fn(name) raise {
-    { name_: name, tensor_: tensor_for(tensors, name) }
+    { name_: name, tensor_: tensor_for(tensors, name), }
   })
 }

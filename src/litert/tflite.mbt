@@ -578,7 +578,7 @@ fn parse_quantization(
           "TFLite per-axis quantization is incompatible with tensor shape for \{tensor_name}: scales=\{scales.length()}, axis=\{quantized_dimension}, shape=\{shape.to_string()}",
         )
       }
-      Some({ scales, zero_points, quantized_dimension })
+      Some({ scales, zero_points, quantized_dimension, })
     }
   }
 }
@@ -617,7 +617,7 @@ fn parse_tensor(
       "quantized TFLite tensor is missing quantization parameters",
     )
   }
-  { name, shape, tensor_type, buffer_index, quantization }
+  { name, shape, tensor_type, buffer_index, quantization, }
 }
 
 ///|
@@ -679,7 +679,7 @@ fn runtime_tensor(
     }
     _ => raise LiteRtError("TFLite runtime tensor type is unsupported")
   }
-  { name_: tensor.name, shape_: tensor.shape, data_type_: data_type }
+  { name_: tensor.name, shape_: tensor.shape, data_type_: data_type, }
 }
 
 ///|
@@ -702,7 +702,7 @@ fn operator_code(
     Some(position) => code.reader.i32(position)
     None => code.u8(0, 0)
   }
-  { builtin, custom: code.string(1) }
+  { builtin, custom: code.string(1), }
 }
 
 ///|
@@ -974,7 +974,7 @@ fn fused_activation(
     4 => [LiteRtNode::Tanh(input, output.name)]
     _ => raise LiteRtError("unsupported TFLite fused activation: \{activation}")
   }
-  { nodes, values: [] }
+  { nodes, values: [], }
 }
 
 ///|
@@ -992,7 +992,7 @@ fn append_fused_activation(
   for node in fused.nodes {
     nodes.push(node)
   }
-  { nodes, values }
+  { nodes, values, }
 }
 
 ///|
@@ -1463,7 +1463,7 @@ fn reshape_operator(
     }
   }
   validate_reshape_dimensions(input, output, dimensions)
-  { nodes: [LiteRtNode::Reshape(input.name, output.name)], values: [] }
+  { nodes: [LiteRtNode::Reshape(input.name, output.name)], values: [], }
 }
 
 ///|

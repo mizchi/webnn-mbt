@@ -109,7 +109,7 @@ fn FlatBufferReader::table(
   }
   self.ensure_range(vtable, vtable_length)
   self.ensure_range(position, object_length)
-  { reader: self, position, vtable, vtable_length, object_length }
+  { reader: self, position, vtable, vtable_length, object_length, }
 }
 
 ///|

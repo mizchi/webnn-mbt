@@ -209,7 +209,7 @@ pub fn WebNNGraphBuilder::input(
     shape_: shape,
     supported_operators: self.supported_operators_,
   }
-  { name_: name, tensor_: tensor }
+  { name_: name, tensor_: tensor, }
 }
 
 ///|
@@ -231,7 +231,7 @@ pub fn WebNNGraphBuilder::output(
       "output belongs to a different WebNN graph builder",
     )
   }
-  { name_: name, tensor_: tensor }
+  { name_: name, tensor_: tensor, }
 }
 
 ///|
@@ -242,7 +242,7 @@ pub fn WebNNNamedValues::new(
   if name == "" {
     raise @tensor.TensorError::new("WebNN runtime value name must not be empty")
   }
-  { name_: name, values_: values.copy() }
+  { name_: name, values_: values.copy(), }
 }
 
 ///|
@@ -339,10 +339,10 @@ pub async fn WebNNGraphBuilder::compile_named(
     context: self.context,
     graph,
     input_specs: inputs.map(fn(input) {
-      { name: input.name_, shape: input.tensor_.shape_ }
+      { name: input.name_, shape: input.tensor_.shape_, }
     }),
     output_specs: outputs.map(fn(output) {
-      { name: output.name_, shape: output.tensor_.shape_ }
+      { name: output.name_, shape: output.tensor_.shape_, }
     }),
   }
 }
@@ -420,7 +420,7 @@ pub async fn WebNNExecution::run(
     )
   }
   let results = self.run_named([
-    { name_: self.input_specs[0].name, values_: input_values },
+    { name_: self.input_specs[0].name, values_: input_values, },
   ])
   results[0].values_
 }
@@ -479,7 +479,7 @@ pub async fn WebNNExecution::run_named(
   let results : Array[WebNNNamedValues] = []
   for index, spec in self.output_specs {
     let values = self.context.read_tensor(self.outputs[index])
-    results.push({ name_: spec.name, values_: values })
+    results.push({ name_: spec.name, values_: values, })
   }
   results
 }

@@ -25,7 +25,7 @@ pub fn NamedTensor::new(
       shape.to_string(),
     )
   }
-  { name_: name, shape_: shape, values_: values.copy() }
+  { name_: name, shape_: shape, values_: values.copy(), }
 }
 
 ///|

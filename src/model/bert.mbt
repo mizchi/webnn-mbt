@@ -42,7 +42,7 @@ pub fn[T] BertEncoderStack::new(
       "BERT encoder stack must contain at least one layer",
     )
   }
-  { layers_: layers.copy() }
+  { layers_: layers.copy(), }
 }
 
 ///|
@@ -146,7 +146,7 @@ pub fn BertEncoderParameters::new(
       )
     }
   }
-  { layers_: layers.copy() }
+  { layers_: layers.copy(), }
 }
 
 ///|

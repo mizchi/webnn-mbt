@@ -116,7 +116,7 @@ async fn WebNNProgramCache::compile_or_get(
 
 ///|
 pub fn WebNNProgramCache::new() -> WebNNProgramCache {
-  { entries: Map([]), generation: { val: 0 } }
+  { entries: Map([]), generation: { val: 0, }, }
 }
 
 ///|

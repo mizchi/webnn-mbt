@@ -23,7 +23,7 @@ pub fn Shape::new(dimensions : Array[Int]) -> Shape raise ShapeError {
       )
     }
   }
-  { dimensions_: dimensions.copy() }
+  { dimensions_: dimensions.copy(), }
 }
 
 ///|
