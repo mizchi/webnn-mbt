@@ -2,14 +2,14 @@
 package "mizchi/webnn/webnn/compat"
 
 import {
-  "mizchi/webnn/webnn/raw",
+  "mizchi/js_web/nn",
   "moonbitlang/core/debug",
 }
 
 // Values
 pub fn compatibility_mode() -> String
 
-pub async fn create_context(DevicePreference) -> @raw.MLContext
+pub async fn create_context(DevicePreference) -> @nn.MLContext
 
 // Errors
 

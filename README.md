@@ -2,7 +2,7 @@
 
 English | [日本語](./README.ja.md)
 
-A WebNN backend and TFLite inference runtime for MoonBit. It provides low-level WebNN bindings, a compatibility adapter for Chrome API revisions, a typed graph builder, a program cache, execution pools, and TFLite-to-WebNN lowering. Compatibility with the browser implementation is continuously tested in headless Chrome Canary.
+A WebNN backend and TFLite inference runtime for MoonBit. It builds on the standard WebNN bindings in [`mizchi/js_web/nn`](https://github.com/mizchi/js.mbt/tree/main/modules/js_web/nn) and adds a compatibility adapter for Chrome API revisions, a typed graph builder, a program cache, execution pools, and TFLite-to-WebNN lowering. Compatibility with the browser implementation is continuously tested in headless Chrome Canary.
 
 The current scope is `float32`, fixed-shape inference with named multi-input/output graphs. Supported operations are:
 
@@ -186,8 +186,7 @@ Responsibilities are separated by layer:
 - `model`: backend-independent model definitions
 - `bert`: Hugging Face named-tensor validation, dense-weight transposition, and conversion to BERT parameters
 - `backend/cpu`: eager CPU implementation for differential testing
-- `webnn/raw`: thin FFI over the WebNN JavaScript API
-- `webnn/compat`: compatibility between Chrome's current `deviceType` API and the newer `accelerated` contract
+- `webnn/compat`: compatibility between Chrome's current `deviceType` API and the newer `accelerated` contract, over the standard bindings in [`mizchi/js_web/nn`](https://github.com/mizchi/js.mbt/tree/main/modules/js_web/nn)
 - `backend/webnn`: symbolic tensors, compilation, program cache, execution pools, and tensor lifecycle
 - `examples/playground/src/app`: focused consumer-side browser API adapters called from Playwright
 - `examples/playground/src/benchmark`: setup and steady-state measurements with CPU/WebNN correctness comparisons

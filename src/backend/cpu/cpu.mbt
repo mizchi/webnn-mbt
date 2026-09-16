@@ -14,7 +14,7 @@ pub fn CpuTensor::new(
       "data length \{values.length()} does not match shape \{shape.to_string()}",
     )
   }
-  { shape_: shape, values_: values.copy() }
+  { shape_: shape, values_: values.copy(), }
 }
 
 ///|
@@ -632,7 +632,7 @@ pub impl @tensor.TensorOps for CpuTensor with fn sigmoid(self : CpuTensor) -> Cp
       Float::from_double(exponential / (1.0 + exponential))
     }
   })
-  { shape_: self.shape_, values_: values }
+  { shape_: self.shape_, values_: values, }
 }
 
 ///|
@@ -640,7 +640,7 @@ pub impl @tensor.TensorOps for CpuTensor with fn tanh(self : CpuTensor) -> CpuTe
   let values = self.values_.map(fn(value) {
     Float::from_double(@math.tanh(value.to_double()))
   })
-  { shape_: self.shape_, values_: values }
+  { shape_: self.shape_, values_: values, }
 }
 
 ///|
@@ -688,7 +688,7 @@ pub impl @tensor.TensorOps for CpuTensor with fn gelu(self : CpuTensor) -> CpuTe
     let x = value.to_double()
     Float::from_double(0.5 * x * (1.0 + error_function(x / 1.4142135623730951)))
   })
-  { shape_: self.shape_, values_: values }
+  { shape_: self.shape_, values_: values, }
 }
 
 ///|
@@ -785,7 +785,7 @@ pub impl @tensor.TensorOps for CpuTensor with fn clamp(
       value
     }
   })
-  { shape_: self.shape_, values_: values }
+  { shape_: self.shape_, values_: values, }
 }
 
 ///|
@@ -797,7 +797,7 @@ pub impl @tensor.TensorOps for CpuTensor with fn relu(self : CpuTensor) -> CpuTe
       value
     }
   })
-  { shape_: self.shape_, values_: values }
+  { shape_: self.shape_, values_: values, }
 }
 
 ///|
@@ -838,7 +838,7 @@ pub impl @tensor.TensorOps for CpuTensor with fn softmax(
       }
     }
   }
-  { shape_: self.shape_, values_: values }
+  { shape_: self.shape_, values_: values, }
 }
 
 ///|
@@ -851,7 +851,7 @@ pub impl @tensor.TensorOps for CpuTensor with fn reshape(
       "reshape changes element count from \{self.shape_.element_count()} to \{shape.element_count()}",
     )
   }
-  { shape_: shape, values_: self.values_.copy() }
+  { shape_: shape, values_: self.values_.copy(), }
 }
 
 ///|

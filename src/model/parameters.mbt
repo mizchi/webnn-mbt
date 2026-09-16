@@ -24,7 +24,7 @@ pub fn SelfAttentionConfig::new(
       " heads",
     )
   }
-  { width_: width, heads_: heads }
+  { width_: width, heads_: heads, }
 }
 
 ///|
@@ -515,7 +515,7 @@ pub fn TransformerEncoderStackParameters::new(
       )
     }
   }
-  { layers_: layers.copy() }
+  { layers_: layers.copy(), }
 }
 
 ///|

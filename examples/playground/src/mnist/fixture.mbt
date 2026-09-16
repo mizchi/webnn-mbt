@@ -16,7 +16,7 @@ pub struct Fixture {
 }
 
 ///|
-extern "js" fn fetch_bytes(url : String) -> @js.Promise[Bytes] =
+extern "js" fn fetch_bytes(url : String) -> @core.Promise[Bytes] =
   #| async (url) => {
   #|   const response = await fetch(url);
   #|   if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status}`);
@@ -74,7 +74,7 @@ fn parse_params(bytes : Bytes) -> @model.MlpParams raise @tensor.TensorError {
   let weight2 = floats_from(bytes, offset, weight2_count)
   offset = offset + weight2_count * 4
   let bias2 = floats_from(bytes, offset, bias2_count)
-  { weight1, bias1, weight2, bias2 }
+  { weight1, bias1, weight2, bias2, }
 }
 
 ///|
@@ -111,7 +111,7 @@ fn parse_labels(bytes : Bytes) -> (Int, Array[Int]) raise @tensor.TensorError {
 
 ///|
 pub async fn load_fixture() -> Fixture {
-  let resources = @js.Promise::all([
+  let resources = @core.Promise::all([
     fetch_bytes("/fixtures/mnist/mlp_784_128_10.bin"),
     fetch_bytes("/fixtures/mnist/t10k-images-idx3-ubyte"),
     fetch_bytes("/fixtures/mnist/t10k-labels-idx1-ubyte"),
@@ -124,7 +124,7 @@ pub async fn load_fixture() -> Fixture {
       "MNIST fixture count mismatch: images={image_count}, labels={label_count}",
     )
   }
-  { params, count: image_count, images, labels }
+  { params, count: image_count, images, labels, }
 }
 
 ///|

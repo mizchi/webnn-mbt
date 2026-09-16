@@ -128,8 +128,8 @@ extern "js" fn tflite_relu6_fixture() -> Bytes =
 fn run_tflite(
   bytes : Bytes,
   input_values : Array[Float],
-) -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+) -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let model = @litert.TfliteModel::parse(bytes)
     let builder = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     let program = builder.compile_litert_program(model)
@@ -139,44 +139,44 @@ fn run_tflite(
 }
 
 ///|
-fn run_tflite_add() -> @js.Promise[Array[Float]] {
+fn run_tflite_add() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_add_fixture(), [1.0, 2.0])
 }
 
 ///|
-fn run_tflite_add_relu6() -> @js.Promise[Array[Float]] {
+fn run_tflite_add_relu6() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_add_relu6_fixture(), [1.0, 2.0])
 }
 
 ///|
-fn run_tflite_fully_connected() -> @js.Promise[Array[Float]] {
+fn run_tflite_fully_connected() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_fully_connected_fixture(), [1.0, 2.0])
 }
 
 ///|
-fn run_tflite_fully_connected_relu6() -> @js.Promise[Array[Float]] {
+fn run_tflite_fully_connected_relu6() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_fully_connected_relu6_fixture(), [1.0, 2.0])
 }
 
 ///|
-fn run_tflite_conv2d() -> @js.Promise[Array[Float]] {
+fn run_tflite_conv2d() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_conv2d_fixture(), [
     1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
   ])
 }
 
 ///|
-fn run_tflite_reshape() -> @js.Promise[Array[Float]] {
+fn run_tflite_reshape() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_reshape_fixture(), [1.0, 2.0, 3.0, 4.0])
 }
 
 ///|
-fn run_tflite_transpose() -> @js.Promise[Array[Float]] {
+fn run_tflite_transpose() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_transpose_fixture(), [1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
 }
 
 ///|
-fn run_tflite_depthwise_conv2d() -> @js.Promise[Array[Float]] {
+fn run_tflite_depthwise_conv2d() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_depthwise_conv2d_fixture(), [
     1.0, 10.0, 2.0, 20.0, 3.0, 30.0, 4.0, 40.0, 5.0, 50.0, 6.0, 60.0, 7.0, 70.0,
     8.0, 80.0, 9.0, 90.0,
@@ -184,38 +184,38 @@ fn run_tflite_depthwise_conv2d() -> @js.Promise[Array[Float]] {
 }
 
 ///|
-fn run_tflite_average_pool2d() -> @js.Promise[Array[Float]] {
+fn run_tflite_average_pool2d() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_average_pool2d_fixture(), [
     1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
   ])
 }
 
 ///|
-fn run_tflite_max_pool2d() -> @js.Promise[Array[Float]] {
+fn run_tflite_max_pool2d() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_max_pool2d_fixture(), [
     1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0,
   ])
 }
 
 ///|
-fn run_tflite_logistic() -> @js.Promise[Array[Float]] {
+fn run_tflite_logistic() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_logistic_fixture(), [0.0, 1.0])
 }
 
 ///|
-fn run_tflite_tanh() -> @js.Promise[Array[Float]] {
+fn run_tflite_tanh() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_tanh_fixture(), [0.0, 1.0])
 }
 
 ///|
-fn run_tflite_quantized_add() -> @js.Promise[Array[Float]] {
+fn run_tflite_quantized_add() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_uint8_add_fixture(), [1.0, 2.0])
 }
 
 ///|
 /// Demonstrates metadata-driven raw UINT8 I/O around the float32 backend.
-fn run_tflite_quantized_add_raw() -> @js.Promise[Array[Int]] {
-  @js.from_async(async fn() {
+fn run_tflite_quantized_add_raw() -> @core.Promise[Array[Int]] {
+  @core.from_async(async fn() {
     let runtime = @litert.TfliteModel::parse_runtime(tflite_uint8_add_fixture())
     let runtime_inputs = runtime.inputs()
     let runtime_outputs = runtime.outputs()
@@ -229,8 +229,8 @@ fn run_tflite_quantized_add_raw() -> @js.Promise[Array[Int]] {
 
 ///|
 /// Demonstrates parser-retained per-axis INT8 I/O around the float32 backend.
-fn run_tflite_per_axis_int8_raw() -> @js.Promise[Array[Int]] {
-  @js.from_async(async fn() {
+fn run_tflite_per_axis_int8_raw() -> @core.Promise[Array[Int]] {
+  @core.from_async(async fn() {
     let runtime = @litert.TfliteModel::parse_runtime(
       tflite_int8_per_axis_runtime_add_fixture(),
     )

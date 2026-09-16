@@ -124,7 +124,7 @@ pub fn TfliteRunnerInput::float32(
   values : Array[Float],
 ) -> TfliteRunnerInput raise @tensor.TensorError {
   ensure_tflite_runner_name(name)
-  { name_: name, values_: Float32(values.copy()) }
+  { name_: name, values_: Float32(values.copy()), }
 }
 
 ///|
@@ -133,7 +133,7 @@ pub fn TfliteRunnerInput::quantized(
   values : Array[Int],
 ) -> TfliteRunnerInput raise @tensor.TensorError {
   ensure_tflite_runner_name(name)
-  { name_: name, values_: Quantized(values.copy()) }
+  { name_: name, values_: Quantized(values.copy()), }
 }
 
 ///|
@@ -157,7 +157,7 @@ fn tflite_runner_output(
   values : TfliteRunnerValues,
 ) -> TfliteRunnerOutput raise @tensor.TensorError {
   ensure_tflite_runner_name(name)
-  { name_: name, values_: values }
+  { name_: name, values_: values, }
 }
 
 ///|
@@ -199,7 +199,7 @@ pub async fn TfliteRunner::compile_pool(
     runtime.model(),
     execution_pool_size,
   )
-  { program, inputs: runtime.inputs(), outputs: runtime.outputs() }
+  { program, inputs: runtime.inputs(), outputs: runtime.outputs(), }
 }
 
 ///|
@@ -221,7 +221,7 @@ pub async fn TfliteModelArtifact::from_bytes(
   bytes : Bytes,
 ) -> TfliteModelArtifact {
   let owned_bytes = Bytes::from_array(bytes.to_array())
-  { bytes_: owned_bytes, digest_: tflite_model_sha256(owned_bytes).wait() }
+  { bytes_: owned_bytes, digest_: tflite_model_sha256(owned_bytes).wait(), }
 }
 
 ///|
@@ -240,7 +240,7 @@ pub fn TfliteModelArtifact::digest(self : TfliteModelArtifact) -> String {
 /// This runner shares the same TFLite I/O validation and quantization boundary
 /// as TfliteRunner, but keeps execution independent of WebNN availability.
 pub fn TfliteCpuRunner::compile(bytes : Bytes) -> TfliteCpuRunner raise {
-  { runtime: @litert.TfliteModel::parse_runtime(bytes) }
+  { runtime: @litert.TfliteModel::parse_runtime(bytes), }
 }
 
 ///|
@@ -485,7 +485,7 @@ pub fn TfliteRunnerCache::new() -> TfliteRunnerCache {
     last_access: Map([]),
     capacity_: default_tflite_runner_cache_capacity,
     byte_capacity_: default_tflite_runner_cache_byte_capacity,
-    generation: { val: 0 },
+    generation: { val: 0, },
     resident_bytes_: 0,
     access_counter: 0,
     hits_: 0,
@@ -529,7 +529,7 @@ pub fn TfliteRunnerCache::new_with_limits(
     last_access: Map([]),
     capacity_: capacity,
     byte_capacity_: byte_capacity,
-    generation: { val: 0 },
+    generation: { val: 0, },
     resident_bytes_: 0,
     access_counter: 0,
     hits_: 0,
@@ -653,7 +653,7 @@ async fn TfliteRunnerCache::compile_or_get(
   self : TfliteRunnerCache,
   key : TfliteRunnerCacheKey,
   model_byte_length : Int,
-  compile : () -> @js.Promise[TfliteRunner],
+  compile : () -> @core.Promise[TfliteRunner],
 ) -> CachedTfliteRunner raise Error {
   let canonical = key.canonical()
   match self.entries.get(canonical) {
@@ -725,7 +725,7 @@ pub fn TfliteRunnerCache::clear(self : TfliteRunnerCache) -> Int {
 }
 
 ///|
-extern "js" fn tflite_model_sha256(bytes : Bytes) -> @js.Promise[String] =
+extern "js" fn tflite_model_sha256(bytes : Bytes) -> @core.Promise[String] =
   #| async (bytes) => {
   #|   const digest = await crypto.subtle.digest("SHA-256", bytes);
   #|   return Array.from(new Uint8Array(digest), (value) =>
@@ -801,7 +801,7 @@ pub async fn TfliteRunnerCache::run_artifact_pool_with_compiler(
   preference : @compat.DevicePreference,
   execution_pool_size : Int,
   input_values : Array[TfliteRunnerInput],
-  compile : () -> @js.Promise[TfliteRunner],
+  compile : () -> @core.Promise[TfliteRunner],
 ) -> Array[TfliteRunnerOutput] {
   let key = TfliteRunnerCacheKey::new(
     artifact.digest_,
@@ -822,7 +822,7 @@ async fn TfliteRunnerCache::run_pool_with_digest(
 ) -> Array[TfliteRunnerOutput] {
   let key = TfliteRunnerCacheKey::new(digest, preference, execution_pool_size)
   self.run_with_compiler(key, bytes.length(), input_values, fn() {
-    @js.from_async(async fn() {
+    @core.from_async(async fn() {
       TfliteRunner::compile_pool(bytes, preference, execution_pool_size)
     })
   })
@@ -834,7 +834,7 @@ async fn TfliteRunnerCache::run_with_compiler(
   key : TfliteRunnerCacheKey,
   model_byte_length : Int,
   input_values : Array[TfliteRunnerInput],
-  compile : () -> @js.Promise[TfliteRunner],
+  compile : () -> @core.Promise[TfliteRunner],
 ) -> Array[TfliteRunnerOutput] {
   match self.compile_or_get(key, model_byte_length, compile) {
     Retained(runner) => runner.run(input_values)

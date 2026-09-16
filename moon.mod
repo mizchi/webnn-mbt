@@ -3,7 +3,8 @@ name = "mizchi/webnn"
 version = "0.1.0"
 
 import {
-  "mizchi/js@0.12.1",
+  "mizchi/js_core@0.13.0",
+  "mizchi/js_web@0.13.1",
 }
 
 readme = "README.md"

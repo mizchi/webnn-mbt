@@ -1,12 +1,12 @@
 import {
-  "mizchi/js",
+  "mizchi/js_core" @core,
   "mizchi/webnn/model",
   "mizchi/webnn/shape",
   "mizchi/webnn/backend/cpu",
   "mizchi/webnn/litert",
   "mizchi/webnn/tensor",
   "mizchi/webnn/webnn/compat",
-  "mizchi/webnn/webnn/raw",
+  "mizchi/js_web/nn",
 }
 
 import {

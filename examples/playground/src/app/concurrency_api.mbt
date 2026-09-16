@@ -1,17 +1,17 @@
 ///|
 extern "js" fn run_program_pair(
-  run : (Array[Float]) -> @js.Promise[Array[Float]],
+  run : (Array[Float]) -> @core.Promise[Array[Float]],
   first : Array[Float],
   second : Array[Float],
-) -> @js.Promise[Array[Array[Float]]] =
+) -> @core.Promise[Array[Array[Float]]] =
   #| (run, first, second) => Promise.all([run(first), run(second)])
 
 ///|
 extern "js" fn run_int_program_pair(
-  run : (Array[Int]) -> @js.Promise[Array[Int]],
+  run : (Array[Int]) -> @core.Promise[Array[Int]],
   first : Array[Int],
   second : Array[Int],
-) -> @js.Promise[Array[Array[Int]]] =
+) -> @core.Promise[Array[Array[Int]]] =
   #| (run, first, second) => Promise.all([run(first), run(second)])
 
 ///|
@@ -56,7 +56,7 @@ async fn compile_probe_program(pool_size : Int) -> @webnn.WebNNProgram {
   let input_binding = builder.input("input", input_shape)
   let weight = builder.constant(@shape.Shape::new([2, 2]), [1.0, 2.0, 3.0, 4.0])
   let bias = builder.constant(@shape.Shape::new([2]), [1.0, 1.0])
-  let output = @model.Linear::{ weight, bias }.forward(input_binding.tensor())
+  let output = @model.Linear::{ weight, bias, }.forward(input_binding.tensor())
   builder.compile_program_pool_single(
     input_binding, "output", output, pool_size,
   )
@@ -84,11 +84,11 @@ extern "js" fn compile_gate_signal_started(gate : CompileGate) -> Unit =
   #| (gate) => gate.signalStarted()
 
 ///|
-extern "js" fn compile_gate_started(gate : CompileGate) -> @js.Promise[Unit] =
+extern "js" fn compile_gate_started(gate : CompileGate) -> @core.Promise[Unit] =
   #| (gate) => gate.started
 
 ///|
-extern "js" fn compile_gate_wait(gate : CompileGate) -> @js.Promise[Unit] =
+extern "js" fn compile_gate_wait(gate : CompileGate) -> @core.Promise[Unit] =
   #| (gate) => gate.release
 
 ///|
@@ -108,8 +108,8 @@ extern "js" fn make_program_cache_clear_race_report(
   #| })
 
 ///|
-fn probe_program_cache_clear_during_compile() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_program_cache_clear_during_compile() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let cache = @webnn.WebNNProgramCache::new()
     let key = @webnn.WebNNProgramCacheKey::new(
       "cache-clear-race-v1",
@@ -117,9 +117,9 @@ fn probe_program_cache_clear_during_compile() -> @js.Promise[@core.Any] {
       [@shape.Shape::new([1, 2])],
     )
     let gate = new_compile_gate()
-    let pending = @js.from_async(async fn() {
+    let pending = @core.from_async(async fn() {
       cache.run_or_compile(key, [1.0, 2.0], fn() {
-        @js.from_async(async fn() {
+        @core.from_async(async fn() {
           compile_gate_signal_started(gate)
           compile_gate_wait(gate).wait()
           compile_probe_program(1)
@@ -149,21 +149,21 @@ extern "js" fn make_tflite_runner_cache_clear_race_report(
 ///|
 /// Verifies that clear() invalidates an in-flight TFLite runner compilation,
 /// so the completed runner is used once but never retained afterwards.
-fn probe_tflite_runner_cache_clear_during_compile() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_tflite_runner_cache_clear_during_compile() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let bytes = tflite_add_fixture()
     let artifact = @webnn.TfliteModelArtifact::from_bytes(bytes)
     let cache = @webnn.TfliteRunnerCache::new()
     defer ignore(cache.clear())
     let gate = new_compile_gate()
-    let pending = @js.from_async(async fn() {
+    let pending = @core.from_async(async fn() {
       cache.run_artifact_pool_with_compiler(
         artifact,
         @compat.DevicePreference::Npu,
         1,
         [@webnn.TfliteRunnerInput::float32("input", [1.0, 2.0])],
         fn() {
-          @js.from_async(async fn() {
+          @core.from_async(async fn() {
             compile_gate_signal_started(gate)
             compile_gate_wait(gate).wait()
             @webnn.TfliteRunner::compile_pool(
@@ -200,11 +200,11 @@ fn probe_tflite_runner_cache_clear_during_compile() -> @js.Promise[@core.Any] {
 }
 
 ///|
-fn probe_execution_pool() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_execution_pool() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let program = compile_probe_program(2)
     let pending = run_program_pair(
-      fn(values) { @js.from_async(async fn() { program.run(values) }) },
+      fn(values) { @core.from_async(async fn() { program.run(values) }) },
       [1.0, 2.0],
       [3.0, 4.0],
     )
@@ -225,8 +225,8 @@ fn probe_execution_pool() -> @js.Promise[@core.Any] {
 }
 
 ///|
-fn probe_concurrent_program() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_concurrent_program() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let program = compile_probe_program(1)
     let rejected_run_recovered = try program.run([1.0]) catch {
       _ => true
@@ -235,7 +235,7 @@ fn probe_concurrent_program() -> @js.Promise[@core.Any] {
     }
     let result_after_rejected_run = program.run([1.0, 2.0])
     let pending = run_program_pair(
-      fn(values) { @js.from_async(async fn() { program.run(values) }) },
+      fn(values) { @core.from_async(async fn() { program.run(values) }) },
       [1.0, 2.0],
       [3.0, 4.0],
     )

@@ -25,8 +25,8 @@ fn quantized_tflite_runner_output(
 ///|
 /// Exercises arbitrary-FlatBuffer compilation, metadata-driven raw INT8 I/O,
 /// and SHA-256 keyed program reuse through the public runner API.
-fn run_tflite_runner_cache_per_axis_int8_raw() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_tflite_runner_cache_per_axis_int8_raw() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let _ = tflite_runner_cache.clear()
     let bytes = tflite_int8_per_axis_runtime_add_fixture()
     let first_outputs = tflite_runner_cache.run(
@@ -49,8 +49,8 @@ fn run_tflite_runner_cache_per_axis_int8_raw() -> @js.Promise[@core.Any] {
 
 ///|
 /// Exercises the public WebNNRuntime entry point and its owned TFLite cache.
-fn run_tflite_runtime_cache_per_axis_int8_raw() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_tflite_runtime_cache_per_axis_int8_raw() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let runtime = @webnn.WebNNRuntime::new(@compat.DevicePreference::Npu)
     defer runtime.clear() |> ignore
     let bytes = tflite_int8_per_axis_runtime_add_fixture()
@@ -70,9 +70,9 @@ fn run_tflite_runtime_cache_per_axis_int8_raw() -> @js.Promise[@core.Any] {
 
 ///|
 /// Exercises the CPU TFLite runner with the same raw per-axis INT8 boundary.
-fn run_tflite_cpu_per_axis_int8_raw() -> @js.Promise[Array[Int]] {
-  @js.from_async(async fn() {
-    let _ = @js.Promise::resolve(()).wait()
+fn run_tflite_cpu_per_axis_int8_raw() -> @core.Promise[Array[Int]] {
+  @core.from_async(async fn() {
+    let _ = @core.Promise::resolve(()).wait()
     let runner = @webnn.TfliteCpuRunner::compile(
       tflite_int8_per_axis_runtime_add_fixture(),
     )
@@ -97,8 +97,10 @@ extern "js" fn tflite_runtime_cpu_fallback_report(
 ///|
 /// Exercise the explicit CPU fallback policy. Tests temporarily hide
 /// navigator.ml so the initial WebNN compile fails before this runner executes.
-fn run_tflite_runtime_cpu_fallback_per_axis_int8_raw() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_tflite_runtime_cpu_fallback_per_axis_int8_raw() -> @core.Promise[
+  @core.Any,
+] {
+  @core.from_async(async fn() {
     let runtime = @webnn.WebNNRuntime::new_with_cpu_fallback(
       @compat.DevicePreference::Npu,
       1,
@@ -134,8 +136,8 @@ extern "js" fn tflite_runtime_policy_report(
 ///|
 /// Verifies capacity-two LRU behavior: touching A preserves A while B is
 /// evicted when C is compiled; a later B run is therefore a second miss.
-fn probe_tflite_runtime_policy() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_tflite_runtime_policy() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let runtime = @webnn.WebNNRuntime::new_with_options(
       @compat.DevicePreference::Npu,
       1,
@@ -192,8 +194,8 @@ extern "js" fn tflite_runtime_cpu_fallback_cache_report(
 ///|
 /// Runs the same failed-WebNN request twice to verify parsed CPU fallback
 /// models are reused instead of parsing and lowering again.
-fn probe_tflite_runtime_cpu_fallback_cache() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_tflite_runtime_cpu_fallback_cache() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let runtime = @webnn.WebNNRuntime::new_with_cpu_fallback(
       @compat.DevicePreference::Npu,
       1,
@@ -238,8 +240,8 @@ extern "js" fn tflite_runtime_byte_budget_report(
 ///|
 /// Verifies LRU eviction by source-FlatBuffer byte budget independently of the
 /// entry-count budget.
-fn probe_tflite_runtime_byte_budget() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_tflite_runtime_byte_budget() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let float_bytes = tflite_add_fixture()
     let uint8_bytes = tflite_uint8_add_fixture()
     let byte_capacity = if float_bytes.length() > uint8_bytes.length() {

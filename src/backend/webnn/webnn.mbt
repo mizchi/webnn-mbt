@@ -1,7 +1,7 @@
 ///|
 pub struct WebNNGraphBuilder {
-  context : @raw.MLContext
-  builder : @raw.MLGraphBuilder
+  context : @nn.MLContext
+  builder : @nn.MLGraphBuilder
   supported_operators_ : Array[String]
 }
 
@@ -23,8 +23,8 @@ pub struct WebNNCapabilities {
 
 ///|
 pub struct WebNNTensor {
-  builder : @raw.MLGraphBuilder
-  operand : @raw.MLOperand
+  builder : @nn.MLGraphBuilder
+  operand : @nn.MLOperand
   shape_ : @shape.Shape
   supported_operators : Array[String]
 }
@@ -55,20 +55,20 @@ struct WebNNValueSpec {
 
 ///|
 pub struct WebNNSession {
-  context : @raw.MLContext
-  graph : @raw.MLGraph
+  context : @nn.MLContext
+  graph : @nn.MLGraph
   input_specs : Array[WebNNValueSpec]
   output_specs : Array[WebNNValueSpec]
 }
 
 ///|
 pub struct WebNNExecution {
-  context : @raw.MLContext
-  graph : @raw.MLGraph
+  context : @nn.MLContext
+  graph : @nn.MLGraph
   input_specs : Array[WebNNValueSpec]
-  inputs : Array[@raw.MLTensor]
+  inputs : Array[@nn.MLTensor]
   output_specs : Array[WebNNValueSpec]
-  outputs : Array[@raw.MLTensor]
+  outputs : Array[@nn.MLTensor]
 }
 
 ///|
@@ -79,7 +79,7 @@ pub async fn WebNNGraphBuilder::new(
   let supported_operators = context.supported_operators(backend_operators())
   {
     context,
-    builder: @raw.MLGraphBuilder::new(context),
+    builder: @nn.MLGraphBuilder(context),
     supported_operators_: supported_operators,
   }
 }
@@ -155,7 +155,7 @@ pub async fn probe_capabilities(
     "nhwc" => @shape.InputLayout::Nhwc
     _ => @shape.InputLayout::Nchw
   }
-  let contract = if @raw.uses_accelerated_contract() {
+  let contract = if @nn.uses_accelerated_contract() {
     Accelerated
   } else {
     LegacyDeviceType
@@ -209,7 +209,7 @@ pub fn WebNNGraphBuilder::input(
     shape_: shape,
     supported_operators: self.supported_operators_,
   }
-  { name_: name, tensor_: tensor }
+  { name_: name, tensor_: tensor, }
 }
 
 ///|
@@ -226,12 +226,12 @@ pub fn WebNNGraphBuilder::output(
   if name == "" {
     raise @tensor.TensorError::new("WebNN output name must not be empty")
   }
-  if !@raw.same_builder(self.builder, tensor.builder) {
+  if !@nn.same_builder(self.builder, tensor.builder) {
     raise @tensor.TensorError::new(
       "output belongs to a different WebNN graph builder",
     )
   }
-  { name_: name, tensor_: tensor }
+  { name_: name, tensor_: tensor, }
 }
 
 ///|
@@ -242,7 +242,7 @@ pub fn WebNNNamedValues::new(
   if name == "" {
     raise @tensor.TensorError::new("WebNN runtime value name must not be empty")
   }
-  { name_: name, values_: values.copy() }
+  { name_: name, values_: values.copy(), }
 }
 
 ///|
@@ -318,14 +318,14 @@ pub async fn WebNNGraphBuilder::compile_named(
   ensure_unique_binding_names("input", input_names)
   ensure_unique_binding_names("output", output_names)
   for input in inputs {
-    if !@raw.same_builder(self.builder, input.tensor_.builder) {
+    if !@nn.same_builder(self.builder, input.tensor_.builder) {
       raise @tensor.TensorError::new(
         "input belongs to a different WebNN graph builder",
       )
     }
   }
   for output in outputs {
-    if !@raw.same_builder(self.builder, output.tensor_.builder) {
+    if !@nn.same_builder(self.builder, output.tensor_.builder) {
       raise @tensor.TensorError::new(
         "output belongs to a different WebNN graph builder",
       )
@@ -339,10 +339,10 @@ pub async fn WebNNGraphBuilder::compile_named(
     context: self.context,
     graph,
     input_specs: inputs.map(fn(input) {
-      { name: input.name_, shape: input.tensor_.shape_ }
+      { name: input.name_, shape: input.tensor_.shape_, }
     }),
     output_specs: outputs.map(fn(output) {
-      { name: output.name_, shape: output.tensor_.shape_ }
+      { name: output.name_, shape: output.tensor_.shape_, }
     }),
   }
 }
@@ -374,7 +374,7 @@ pub async fn WebNNSession::run_named(
 
 ///|
 pub async fn WebNNSession::prepare(self : WebNNSession) -> WebNNExecution {
-  let inputs : Array[@raw.MLTensor] = []
+  let inputs : Array[@nn.MLTensor] = []
   for spec in self.input_specs {
     let input = self.context.create_tensor(spec.shape.dimensions(), true, false) catch {
       error => {
@@ -384,7 +384,7 @@ pub async fn WebNNSession::prepare(self : WebNNSession) -> WebNNExecution {
     }
     inputs.push(input)
   }
-  let outputs : Array[@raw.MLTensor] = []
+  let outputs : Array[@nn.MLTensor] = []
   for spec in self.output_specs {
     let output = self.context.create_tensor(
       spec.shape.dimensions(),
@@ -420,7 +420,7 @@ pub async fn WebNNExecution::run(
     )
   }
   let results = self.run_named([
-    { name_: self.input_specs[0].name, values_: input_values },
+    { name_: self.input_specs[0].name, values_: input_values, },
   ])
   results[0].values_
 }
@@ -479,7 +479,7 @@ pub async fn WebNNExecution::run_named(
   let results : Array[WebNNNamedValues] = []
   for index, spec in self.output_specs {
     let values = self.context.read_tensor(self.outputs[index])
-    results.push({ name_: spec.name, values_: values })
+    results.push({ name_: spec.name, values_: values, })
   }
   results
 }
@@ -495,7 +495,7 @@ fn ensure_same_builder(
   lhs : WebNNTensor,
   rhs : WebNNTensor,
 ) -> Unit raise @tensor.TensorError {
-  if !@raw.same_builder(lhs.builder, rhs.builder) {
+  if !@nn.same_builder(lhs.builder, rhs.builder) {
     raise @tensor.TensorError::new(
       "operands belong to different WebNN graph builders",
     )

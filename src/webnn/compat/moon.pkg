@@ -1,6 +1,6 @@
 import {
   "mizchi/webnn/tensor",
-  "mizchi/webnn/webnn/raw",
+  "mizchi/js_web/nn",
 }
 
 supported_targets = "js"

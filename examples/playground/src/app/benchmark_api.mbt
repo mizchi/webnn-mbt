@@ -3,20 +3,20 @@ fn benchmark_mnist_cache(
   batch_size : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @mnist.benchmark_cache(batch_size, warmup, iterations)
   })
 }
 
 ///|
-fn run_mnist_cached(batch_size : Int) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @mnist.run_cached(batch_size) })
+fn run_mnist_cached(batch_size : Int) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @mnist.run_cached(batch_size) })
 }
 
 ///|
-fn evaluate_mnist(count : Int) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @mnist.evaluate(count) })
+fn evaluate_mnist(count : Int) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @mnist.evaluate(count) })
 }
 
 ///|
@@ -24,8 +24,10 @@ fn benchmark_mnist(
   batch_size : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @mnist.benchmark(batch_size, warmup, iterations) })
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
+    @mnist.benchmark(batch_size, warmup, iterations)
+  })
 }
 
 ///|
@@ -33,8 +35,8 @@ fn benchmark_matmul(
   size : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @bench.matmul(size, warmup, iterations) })
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @bench.matmul(size, warmup, iterations) })
 }
 
 ///|
@@ -43,8 +45,8 @@ fn benchmark_transformer_block(
   width : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.transformer_block(tokens, width, warmup, iterations)
   })
 }
@@ -57,8 +59,8 @@ fn benchmark_self_attention(
   mask_mode : String,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.self_attention(tokens, width, heads, mask_mode, warmup, iterations)
   })
 }
@@ -72,8 +74,8 @@ fn benchmark_transformer_encoder(
   mask_mode : String,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.transformer_encoder(
       batch_size, tokens, width, heads, mask_mode, warmup, iterations,
     )
@@ -90,8 +92,8 @@ fn benchmark_transformer_encoder_stack(
   mask_mode : String,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.transformer_encoder_stack(
       layers, batch_size, tokens, width, heads, mask_mode, warmup, iterations,
     )
@@ -108,8 +110,8 @@ fn benchmark_bert_encoder(
   mask_mode : String,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.bert_encoder(
       layers, batch_size, tokens, width, heads, mask_mode, warmup, iterations,
     )
@@ -154,8 +156,8 @@ fn bert_fixture_max_abs_error(
 }
 
 ///|
-fn run_bert_safetensors_fixture() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_bert_safetensors_fixture() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let bytes = fetch_tflite_fixture(
       "/fixtures/bert/tiny-bert-encoder.safetensors",
     ).wait()

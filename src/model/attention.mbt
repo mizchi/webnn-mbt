@@ -39,7 +39,7 @@ pub fn AttentionMask::additive(
       "attention mask data length \{values.length()} does not match shape \{shape.to_string()}",
     )
   }
-  { shape_: shape, values_: values.copy() }
+  { shape_: shape, values_: values.copy(), }
 }
 
 ///|
@@ -81,7 +81,7 @@ fn make_attention_mask(
   let shape = @shape.Shape::new([1, tokens, tokens]) catch {
     error => raise @tensor.TensorError::new(error.to_string())
   }
-  { shape_: shape, values_: values }
+  { shape_: shape, values_: values, }
 }
 
 ///|
@@ -162,7 +162,7 @@ fn make_batched_attention_mask(
   let shape = @shape.Shape::new([valid_batches.length(), 1, tokens, tokens]) catch {
     error => raise @tensor.TensorError::new(error.to_string())
   }
-  { shape_: shape, values_: values }
+  { shape_: shape, values_: values, }
 }
 
 ///|

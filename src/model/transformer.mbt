@@ -129,7 +129,7 @@ pub fn[T] TransformerEncoderStack::new(
       "Transformer encoder stack must contain at least one layer",
     )
   }
-  { layers_: layers.copy() }
+  { layers_: layers.copy(), }
 }
 
 ///|

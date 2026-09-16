@@ -1,6 +1,5 @@
 import {
-  "mizchi/js",
-  "mizchi/js/core",
+  "mizchi/js_core" @core,
   "mizchi/webnn",
   "mizchi/webnn/backend/cpu",
   "mizchi/webnn/bert",

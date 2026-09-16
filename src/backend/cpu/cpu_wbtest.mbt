@@ -3,7 +3,7 @@ test "generic Linear forward runs on the CPU backend" {
   let input = CpuTensor::new(@shape.Shape::new([1, 2]), [1.0, 2.0])
   let weight = CpuTensor::new(@shape.Shape::new([2, 2]), [1.0, 2.0, 3.0, 4.0])
   let bias = CpuTensor::new(@shape.Shape::new([2]), [1.0, 1.0])
-  let linear = @model.Linear::{ weight, bias }
+  let linear = @model.Linear::{ weight, bias, }
   @test.assert_eq(linear.forward(input).values(), [8.0, 11.0])
 }
 
@@ -94,10 +94,10 @@ test "generic TransformerBlock composes normalization GELU and residual" {
   let identity = CpuTensor::new(@shape.Shape::new([2, 2]), [1.0, 0.0, 0.0, 1.0])
   let zero_bias = CpuTensor::new(@shape.Shape::new([2]), [0.0, 0.0])
   let model = @model.TransformerBlock::{
-    input_projection: { weight: identity, bias: zero_bias },
+    input_projection: { weight: identity, bias: zero_bias, },
     normalization_scale: CpuTensor::new(@shape.Shape::new([2]), [1.0, 1.0]),
     normalization_bias: zero_bias,
-    output_projection: { weight: identity, bias: zero_bias },
+    output_projection: { weight: identity, bias: zero_bias, },
     normalization_axes: [1],
     epsilon: 1.0e-5,
   }
@@ -208,7 +208,7 @@ fn identity_self_attention(
 ) -> @model.SelfAttention[CpuTensor] raise {
   let identity = CpuTensor::new(@shape.Shape::new([2, 2]), [1.0, 0.0, 0.0, 1.0])
   let zero_bias = CpuTensor::new(@shape.Shape::new([2]), [0.0, 0.0])
-  let projection = @model.Linear::{ weight: identity, bias: zero_bias }
+  let projection = @model.Linear::{ weight: identity, bias: zero_bias, }
   {
     query: projection,
     key: projection,
@@ -373,8 +373,8 @@ fn identity_encoder_block() -> @model.TransformerEncoderBlock[CpuTensor] raise {
     attention: identity_self_attention(2, None),
     feed_forward_normalization: normalization,
     feed_forward: {
-      input_projection: { weight: identity, bias: zero_bias },
-      output_projection: { weight: zero_weight, bias: zero_bias },
+      input_projection: { weight: identity, bias: zero_bias, },
+      output_projection: { weight: zero_weight, bias: zero_bias, },
     },
   }
 }
@@ -495,8 +495,8 @@ fn identity_bert_encoder_block() -> @model.BertEncoderBlock[CpuTensor] raise {
     attention: identity_self_attention(2, None),
     attention_output_normalization: normalization,
     feed_forward: {
-      input_projection: { weight: identity, bias: zero_bias },
-      output_projection: { weight: zero_weight, bias: zero_bias },
+      input_projection: { weight: identity, bias: zero_bias, },
+      output_projection: { weight: zero_weight, bias: zero_bias, },
     },
     output_normalization: normalization,
   }
