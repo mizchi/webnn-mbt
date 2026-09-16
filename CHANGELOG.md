@@ -19,10 +19,12 @@ All notable changes to this project are documented in this file.
   change: `MLGraphBuilder::new(context)` is now `MLGraphBuilder(context)`,
   MoonBit's canonical constructor form.
 
-- Dependencies are now `mizchi/js_core` and `mizchi/js_web` rather than the
-  `mizchi/js` facade, which as of 0.13.0 is a convenience wrapper that would
-  pull in the whole surface. `@js.Promise` and `@js.from_async` are
-  `@core.Promise` and `@core.from_async`.
+- Dependencies are now `mizchi/js_core@0.13.0` and `mizchi/js_web@0.13.1`
+  rather than the `mizchi/js` facade, which as of 0.13.0 is a convenience
+  wrapper that would pull in the whole surface. `@js.Promise` and
+  `@js.from_async` are `@core.Promise` and `@core.from_async`. Only `js_web`
+  needs the newer release, since that is where `nn` lives; `js_core` stays at
+  the already-published 0.13.0.
 
 ## [0.1.0] - 2026-07-15
 
