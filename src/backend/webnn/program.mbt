@@ -106,7 +106,7 @@ pub async fn WebNNProgram::run_named(
   input_values : Array[WebNNNamedValues],
 ) -> Array[WebNNNamedValues] {
   enqueue_program_run(self.scheduler, fn(slot) {
-    @js.from_async(async fn() { self.executions[slot].run_named(input_values) })
+    @core.from_async(async fn() { self.executions[slot].run_named(input_values) })
   }).wait()
 }
 

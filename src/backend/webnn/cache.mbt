@@ -81,7 +81,7 @@ priv enum CachedProgram {
 async fn WebNNProgramCache::compile_or_get(
   self : WebNNProgramCache,
   key : WebNNProgramCacheKey,
-  compile : () -> @js.Promise[WebNNProgram],
+  compile : () -> @core.Promise[WebNNProgram],
 ) -> CachedProgram raise Error {
   let canonical = key.canonical()
   match self.entries.get(canonical) {
@@ -129,7 +129,7 @@ pub async fn WebNNProgramCache::run_or_compile(
   self : WebNNProgramCache,
   key : WebNNProgramCacheKey,
   input_values : Array[Float],
-  compile : () -> @js.Promise[WebNNProgram],
+  compile : () -> @core.Promise[WebNNProgram],
 ) -> (Array[Float], Bool) {
   match self.compile_or_get(key, compile) {
     Retained(program, cache_hit) => (program.run(input_values), cache_hit)
@@ -155,7 +155,7 @@ pub async fn WebNNProgramCache::run_named_or_compile(
   self : WebNNProgramCache,
   key : WebNNProgramCacheKey,
   input_values : Array[WebNNNamedValues],
-  compile : () -> @js.Promise[WebNNProgram],
+  compile : () -> @core.Promise[WebNNProgram],
 ) -> (Array[WebNNNamedValues], Bool) {
   match self.compile_or_get(key, compile) {
     Retained(program, cache_hit) => (program.run_named(input_values), cache_hit)

@@ -49,8 +49,8 @@ extern "js" fn new_program_scheduler(pool_size : Int) -> WebNNProgramScheduler =
 ///|
 extern "js" fn enqueue_program_run(
   scheduler : WebNNProgramScheduler,
-  operation : (Int) -> @js.Promise[Array[WebNNNamedValues]],
-) -> @js.Promise[Array[WebNNNamedValues]] =
+  operation : (Int) -> @core.Promise[Array[WebNNNamedValues]],
+) -> @core.Promise[Array[WebNNNamedValues]] =
   #| (scheduler, operation) => {
   #|   if (scheduler.closed) {
   #|     return Promise.reject(new Error("WebNN program has been destroyed"));

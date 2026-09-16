@@ -1,6 +1,6 @@
 ///|
-fn run_grouped_conv() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_grouped_conv() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let builder = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     let input_binding = builder.input("input", @shape.Shape::new([1, 2, 2, 2]))
     let filter = builder.constant(@shape.Shape::new([2, 1, 1, 1]), [2.0, 3.0])
@@ -29,8 +29,8 @@ extern "js" fn make_preferred_layout_conv_report(
   #| })
 
 ///|
-fn run_preferred_layout_conv() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_preferred_layout_conv() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let builder = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     let input_layout = builder.preferred_input_layout()
     let (input_shape, filter_shape, filter_layout) = match input_layout {
@@ -76,8 +76,8 @@ fn benchmark_tiny_cnn(
   batch_size : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @bench.tiny_cnn(batch_size, warmup, iterations) })
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @bench.tiny_cnn(batch_size, warmup, iterations) })
 }
 
 ///|
@@ -86,8 +86,8 @@ fn benchmark_tiny_cnn_layout(
   batch_size : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let layout = match input_layout {
       "nchw" => @shape.InputLayout::Nchw
       "nhwc" => @shape.InputLayout::Nhwc
@@ -101,8 +101,8 @@ fn benchmark_tiny_cnn_layout(
 }
 
 ///|
-fn run_conv_softmax() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_conv_softmax() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let builder = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     let input_binding = builder.input("input", @shape.Shape::new([1, 1, 3, 3]))
     let filter = builder.constant(@shape.Shape::new([1, 1, 2, 2]), [
@@ -125,8 +125,8 @@ fn benchmark_named_io(
   size : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @bench.named_io(size, warmup, iterations) })
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @bench.named_io(size, warmup, iterations) })
 }
 
 ///|
@@ -152,8 +152,8 @@ extern "js" fn make_named_multi_io_report(
   #| })
 
 ///|
-fn run_named_multi_io() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_named_multi_io() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let builder = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     let shape = @shape.Shape::new([2])
     let x = builder.input("x", shape)
@@ -235,8 +235,8 @@ fn benchmark_mnist_pool(
   request_count : Int,
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @mnist.benchmark_pool(pool_size, request_count, warmup, iterations)
   })
 }

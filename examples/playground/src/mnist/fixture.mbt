@@ -16,7 +16,7 @@ pub struct Fixture {
 }
 
 ///|
-extern "js" fn fetch_bytes(url : String) -> @js.Promise[Bytes] =
+extern "js" fn fetch_bytes(url : String) -> @core.Promise[Bytes] =
   #| async (url) => {
   #|   const response = await fetch(url);
   #|   if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status}`);
@@ -111,7 +111,7 @@ fn parse_labels(bytes : Bytes) -> (Int, Array[Int]) raise @tensor.TensorError {
 
 ///|
 pub async fn load_fixture() -> Fixture {
-  let resources = @js.Promise::all([
+  let resources = @core.Promise::all([
     fetch_bytes("/fixtures/mnist/mlp_784_128_10.bin"),
     fetch_bytes("/fixtures/mnist/t10k-images-idx3-ubyte"),
     fetch_bytes("/fixtures/mnist/t10k-labels-idx1-ubyte"),

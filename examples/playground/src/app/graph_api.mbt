@@ -1,6 +1,6 @@
 ///|
-fn supported_operators() -> @js.Promise[Array[String]] {
-  @js.from_async(async fn() {
+fn supported_operators() -> @core.Promise[Array[String]] {
+  @core.from_async(async fn() {
     let graph = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     defer graph.destroy()
     graph.supported_operators()
@@ -24,8 +24,8 @@ extern "js" fn make_webnn_capabilities_report(
   #| })
 
 ///|
-fn probe_webnn_capabilities() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_webnn_capabilities() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let capabilities = @webnn.probe_capabilities(@compat.DevicePreference::Npu)
     make_webnn_capabilities_report(
       capabilities.contract().to_string(),
@@ -38,8 +38,8 @@ fn probe_webnn_capabilities() -> @js.Promise[@core.Any] {
 }
 
 ///|
-fn run_cpu_linear() -> @js.Promise[Array[Float]] {
-  @js.from_async(fn() raise {
+fn run_cpu_linear() -> @core.Promise[Array[Float]] {
+  @core.from_async(fn() raise {
     let input = @cpu.CpuTensor::new(@shape.Shape::new([1, 2]), [1.0, 2.0])
     let weight = @cpu.CpuTensor::new(@shape.Shape::new([2, 2]), [
       1.0, 2.0, 3.0, 4.0,
@@ -50,8 +50,8 @@ fn run_cpu_linear() -> @js.Promise[Array[Float]] {
 }
 
 ///|
-fn run_add() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_add() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let shape = @shape.Shape::new([4])
     let graph = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     defer graph.destroy()
@@ -65,8 +65,8 @@ fn run_add() -> @js.Promise[Array[Float]] {
 }
 
 ///|
-fn run_concat() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_concat() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let graph = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     let lhs = graph.input("lhs", @shape.Shape::new([2, 2]))
     let rhs = graph.input("rhs", @shape.Shape::new([2, 1]))
@@ -84,8 +84,8 @@ fn run_concat() -> @js.Promise[Array[Float]] {
 }
 
 ///|
-fn run_linear() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_linear() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let input_shape = @shape.Shape::new([1, 2])
     let graph = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     defer graph.destroy()
@@ -101,8 +101,8 @@ fn run_linear() -> @js.Promise[Array[Float]] {
 }
 
 ///|
-fn run_litert_linear() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_litert_linear() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let input_shape = @shape.Shape::new([1, 2])
     let weight_shape = @shape.Shape::new([2, 2])
     let output_shape = @shape.Shape::new([1, 2])

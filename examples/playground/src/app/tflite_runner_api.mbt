@@ -1,11 +1,11 @@
 ///|
 /// Verifies that concurrent cache misses/hits keep raw quantized values isolated.
-fn probe_tflite_runner_cache_concurrency() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_tflite_runner_cache_concurrency() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let cache = @webnn.TfliteRunnerCache::new()
     defer ignore(cache.clear())
-    let run = fn(values : Array[Int]) -> @js.Promise[Array[Int]] {
-      @js.from_async(async fn() {
+    let run = fn(values : Array[Int]) -> @core.Promise[Array[Int]] {
+      @core.from_async(async fn() {
         let outputs = cache.run(
           tflite_int8_per_axis_runtime_add_fixture(),
           @compat.DevicePreference::Npu,
@@ -26,8 +26,8 @@ fn probe_tflite_runner_cache_concurrency() -> @js.Promise[@core.Any] {
 
 ///|
 /// Uses the input/output names embedded in a standard TFLite ADD FlatBuffer.
-fn run_tflite_runner_named_add() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_tflite_runner_named_add() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let runner = @webnn.TfliteRunner::compile(
       tflite_add_fixture(),
       @compat.DevicePreference::Npu,
@@ -63,8 +63,8 @@ extern "js" fn tflite_runner_multi_io_report(
 
 ///|
 /// Runs a TFLite graph with two named inputs and two declared outputs.
-fn run_tflite_runner_two_input_two_output() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_tflite_runner_two_input_two_output() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let runner = @webnn.TfliteRunner::compile(
       tflite_two_input_two_output_fixture(),
       @compat.DevicePreference::Npu,
@@ -91,8 +91,8 @@ fn run_tflite_runner_two_input_two_output() -> @js.Promise[@core.Any] {
 }
 
 ///|
-fn run_tflite_sub() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_tflite_sub() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let runner = @webnn.TfliteRunner::compile(
       tflite_sub_fixture(),
       @compat.DevicePreference::Npu,
@@ -118,12 +118,12 @@ fn run_tflite_sub() -> @js.Promise[Array[Float]] {
 }
 
 ///|
-fn run_tflite_relu_n1_to_1() -> @js.Promise[Array[Float]] {
+fn run_tflite_relu_n1_to_1() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_relu_n1_to_1_fixture(), [-2.0, -0.5, 0.5, 3.0])
 }
 
 ///|
-fn run_tflite_relu6() -> @js.Promise[Array[Float]] {
+fn run_tflite_relu6() -> @core.Promise[Array[Float]] {
   run_tflite(tflite_relu6_fixture(), [-2.0, 0.5, 5.0, 8.0])
 }
 
@@ -131,16 +131,16 @@ fn run_tflite_relu6() -> @js.Promise[Array[Float]] {
 fn benchmark_litert_linear(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @bench.litert_linear(warmup, iterations) })
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @bench.litert_linear(warmup, iterations) })
 }
 
 ///|
 fn benchmark_tflite_fully_connected(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.tflite_fully_connected(warmup, iterations)
   })
 }
@@ -149,16 +149,16 @@ fn benchmark_tflite_fully_connected(
 fn benchmark_tflite_sub(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @bench.tflite_sub(warmup, iterations) })
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @bench.tflite_sub(warmup, iterations) })
 }
 
 ///|
 fn benchmark_tflite_depthwise_conv2d(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.tflite_depthwise_conv2d(warmup, iterations)
   })
 }
@@ -167,16 +167,16 @@ fn benchmark_tflite_depthwise_conv2d(
 fn benchmark_tflite_max_pool2d(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() { @bench.tflite_max_pool2d(warmup, iterations) })
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() { @bench.tflite_max_pool2d(warmup, iterations) })
 }
 
 ///|
 fn benchmark_tflite_per_axis_int8_raw(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.tflite_per_axis_int8_raw(warmup, iterations)
   })
 }
@@ -185,15 +185,15 @@ fn benchmark_tflite_per_axis_int8_raw(
 fn benchmark_tflite_runner_cache_per_axis_int8_raw(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     @bench.tflite_runner_cache_per_axis_int8_raw(warmup, iterations)
   })
 }
 
 ///|
-fn run_transform_pipeline() -> @js.Promise[Array[Float]] {
-  @js.from_async(async fn() {
+fn run_transform_pipeline() -> @core.Promise[Array[Float]] {
+  @core.from_async(async fn() {
     let input_shape = @shape.Shape::new([2, 2])
     let graph = @webnn.WebNNGraphBuilder::new(@compat.DevicePreference::Npu)
     defer graph.destroy()

@@ -2,13 +2,13 @@
 package "mizchi/webnn/backend/webnn"
 
 import {
-  "mizchi/js/core",
+  "mizchi/js_core",
+  "mizchi/js_web/nn",
   "mizchi/webnn/litert",
   "mizchi/webnn/model",
   "mizchi/webnn/shape",
   "mizchi/webnn/tensor",
   "mizchi/webnn/webnn/compat",
-  "mizchi/webnn/webnn/raw",
   "moonbitlang/core/debug",
   "moonbitlang/core/ref",
 }
@@ -114,7 +114,7 @@ pub fn TfliteRunnerCache::resident_bytes(Self) -> Int
 pub async fn TfliteRunnerCache::run(Self, Bytes, @compat.DevicePreference, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
 pub async fn TfliteRunnerCache::run_artifact(Self, TfliteModelArtifact, @compat.DevicePreference, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
 pub async fn TfliteRunnerCache::run_artifact_pool(Self, TfliteModelArtifact, @compat.DevicePreference, Int, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
-pub async fn TfliteRunnerCache::run_artifact_pool_with_compiler(Self, TfliteModelArtifact, @compat.DevicePreference, Int, Array[TfliteRunnerInput], () -> @core.Promise[TfliteRunner]) -> Array[TfliteRunnerOutput]
+pub async fn TfliteRunnerCache::run_artifact_pool_with_compiler(Self, TfliteModelArtifact, @compat.DevicePreference, Int, Array[TfliteRunnerInput], () -> @js_core.Promise[TfliteRunner]) -> Array[TfliteRunnerOutput]
 pub async fn TfliteRunnerCache::run_pool(Self, Bytes, @compat.DevicePreference, Int, Array[TfliteRunnerInput]) -> Array[TfliteRunnerOutput]
 
 pub struct TfliteRunnerCacheKey {
@@ -183,20 +183,20 @@ pub enum WebNNContextContract {
 pub fn WebNNContextContract::to_string(Self) -> String
 
 pub struct WebNNExecution {
-  context : @raw.MLContext
-  graph : @raw.MLGraph
+  context : @nn.MLContext
+  graph : @nn.MLGraph
   input_specs : Array[WebNNValueSpec]
-  inputs : Array[@raw.MLTensor]
+  inputs : Array[@nn.MLTensor]
   output_specs : Array[WebNNValueSpec]
-  outputs : Array[@raw.MLTensor]
+  outputs : Array[@nn.MLTensor]
 }
 pub fn WebNNExecution::destroy(Self) -> Unit
 pub async fn WebNNExecution::run(Self, Array[Float]) -> Array[Float]
 pub async fn WebNNExecution::run_named(Self, Array[WebNNNamedValues]) -> Array[WebNNNamedValues]
 
 pub struct WebNNGraphBuilder {
-  context : @raw.MLContext
-  builder : @raw.MLGraphBuilder
+  context : @nn.MLContext
+  builder : @nn.MLGraphBuilder
   supported_operators_ : Array[String]
 }
 pub async fn WebNNGraphBuilder::compile_litert_program(Self, @litert.LiteRtModel) -> WebNNProgram
@@ -265,8 +265,8 @@ pub struct WebNNProgramCache {
 pub fn WebNNProgramCache::clear(Self) -> Int
 pub fn WebNNProgramCache::length(Self) -> Int
 pub fn WebNNProgramCache::new() -> Self
-pub async fn WebNNProgramCache::run_named_or_compile(Self, WebNNProgramCacheKey, Array[WebNNNamedValues], () -> @core.Promise[WebNNProgram]) -> (Array[WebNNNamedValues], Bool)
-pub async fn WebNNProgramCache::run_or_compile(Self, WebNNProgramCacheKey, Array[Float], () -> @core.Promise[WebNNProgram]) -> (Array[Float], Bool)
+pub async fn WebNNProgramCache::run_named_or_compile(Self, WebNNProgramCacheKey, Array[WebNNNamedValues], () -> @js_core.Promise[WebNNProgram]) -> (Array[WebNNNamedValues], Bool)
+pub async fn WebNNProgramCache::run_or_compile(Self, WebNNProgramCacheKey, Array[Float], () -> @js_core.Promise[WebNNProgram]) -> (Array[Float], Bool)
 
 pub struct WebNNProgramCacheKey {
   graph_hash_ : String
@@ -334,8 +334,8 @@ pub fn WebNNRuntimeMetrics::misses(Self) -> Int
 pub fn WebNNRuntimeMetrics::resident_bytes(Self) -> Int
 
 pub struct WebNNSession {
-  context : @raw.MLContext
-  graph : @raw.MLGraph
+  context : @nn.MLContext
+  graph : @nn.MLGraph
   input_specs : Array[WebNNValueSpec]
   output_specs : Array[WebNNValueSpec]
 }
@@ -344,8 +344,8 @@ pub async fn WebNNSession::run(Self, Array[Float]) -> Array[Float]
 pub async fn WebNNSession::run_named(Self, Array[WebNNNamedValues]) -> Array[WebNNNamedValues]
 
 pub struct WebNNTensor {
-  builder : @raw.MLGraphBuilder
-  operand : @raw.MLOperand
+  builder : @nn.MLGraphBuilder
+  operand : @nn.MLOperand
   shape_ : @shape.Shape
   supported_operators : Array[String]
 }

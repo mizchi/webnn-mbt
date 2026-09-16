@@ -68,7 +68,7 @@ async fn cached_run(
 ) -> (Array[Float], Bool) {
   let key = program_key(input_shape, preference)
   program_cache.run_or_compile(key, inputs, fn() {
-    @js.from_async(async fn() {
+    @core.from_async(async fn() {
       compile_program(params, input_shape, preference)
     })
   })

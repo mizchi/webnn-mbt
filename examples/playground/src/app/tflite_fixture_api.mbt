@@ -1,5 +1,5 @@
 ///|
-extern "js" fn fetch_tflite_fixture(url : String) -> @js.Promise[Bytes] =
+extern "js" fn fetch_tflite_fixture(url : String) -> @core.Promise[Bytes] =
   #| async (url) => {
   #|   const response = await fetch(url);
   #|   if (!response.ok) throw new Error(`Failed to fetch ${url}: ${response.status}`);
@@ -36,8 +36,8 @@ extern "js" fn make_micro_speech_fixture_error_report(
 /// Run TensorFlow Lite Micro's quantized Micro Speech model from its pinned
 /// fixture. Zero-valued raw INT8 input makes the test deterministic while
 /// exercising a real CONV_2D → FULLY_CONNECTED → SOFTMAX model.
-fn run_micro_speech_fixture() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_micro_speech_fixture() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let bytes = fetch_tflite_fixture(
       "/fixtures/tflite/micro_speech_quantized.tflite",
     ).wait()
@@ -74,8 +74,8 @@ fn run_micro_speech_fixture() -> @js.Promise[@core.Any] {
 /// Run TensorFlow Lite Micro's int8 person-detection model from its pinned
 /// fixture. A zero-valued image gives deterministic raw quantized I/O while
 /// exercising a substantially deeper MobileNet-style graph.
-fn run_person_detection_fixture() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_person_detection_fixture() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let bytes = fetch_tflite_fixture("/fixtures/tflite/person_detect.tflite").wait()
     let model = try @litert.TfliteModel::parse_runtime(bytes) catch {
       @litert.LiteRtError::LiteRtError(message) =>
@@ -134,8 +134,8 @@ extern "js" fn make_mobilenet_v2_benchmark_report(
 ///|
 /// Probe a standard MobileNet V2 quantized model to select the next parser
 /// operator from a real model corpus before adding synthetic coverage.
-fn probe_mobilenet_v2_fixture() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_mobilenet_v2_fixture() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let bytes = fetch_tflite_fixture(
       "/fixtures/tflite/mobilenet_v2_1.0_224_inat_bird_quant.tflite",
     ).wait()
@@ -155,8 +155,8 @@ fn probe_mobilenet_v2_fixture() -> @js.Promise[@core.Any] {
 ///|
 /// Execute MobileNet V2 twice to cover actual lowering, compile, raw UINT8 I/O,
 /// and the cache-hit path for the large real-model corpus fixture.
-fn run_mobilenet_v2_fixture() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn run_mobilenet_v2_fixture() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let bytes = fetch_tflite_fixture(
       "/fixtures/tflite/mobilenet_v2_1.0_224_inat_bird_quant.tflite",
     ).wait()
@@ -193,8 +193,8 @@ fn run_mobilenet_v2_fixture() -> @js.Promise[@core.Any] {
 fn benchmark_mobilenet_v2_fixture(
   warmup : Int,
   iterations : Int,
-) -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+) -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     if warmup < 0 {
       raise @tensor.TensorError::new(
         "MobileNet V2 benchmark warmup must be non-negative",
@@ -269,8 +269,8 @@ fn benchmark_mobilenet_v2_fixture(
 
 ///|
 /// Verify that unsupported real-model operators fail with their TFLite name.
-fn probe_audio_preprocessor_fixture() -> @js.Promise[@core.Any] {
-  @js.from_async(async fn() {
+fn probe_audio_preprocessor_fixture() -> @core.Promise[@core.Any] {
+  @core.from_async(async fn() {
     let bytes = fetch_tflite_fixture(
       "/fixtures/tflite/audio_preprocessor_int8.tflite",
     ).wait()

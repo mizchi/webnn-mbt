@@ -1,8 +1,8 @@
 ///|
 extern "js" fn run_concurrent_requests(
-  run : () -> @js.Promise[Array[Float]],
+  run : () -> @core.Promise[Array[Float]],
   request_count : Int,
-) -> @js.Promise[Array[Array[Float]]] =
+) -> @core.Promise[Array[Array[Float]]] =
   #| (run, requestCount) => Promise.all(
   #|   Array.from({ length: requestCount }, () => run()),
   #| )
@@ -73,7 +73,7 @@ pub async fn benchmark_pool(
   defer program.destroy()
   let run_group = fn() {
     run_concurrent_requests(
-      fn() { @js.from_async(async fn() { program.run(inputs) }) },
+      fn() { @core.from_async(async fn() { program.run(inputs) }) },
       request_count,
     )
   }

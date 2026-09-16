@@ -2,7 +2,7 @@
 
 [English](./README.md) | 日本語
 
-MoonBit向けのWebNN backendおよびTFLite inference runtimeです。低レベルのWebNN binding、Chrome間のcompatibility adapter、型付きgraph builder、program cache、execution pool、TFLiteからWebNNへのloweringを提供します。Chrome Canaryのheadless modeで実装との互換性を継続検証しています。
+MoonBit向けのWebNN backendおよびTFLite inference runtimeです。標準のWebNN bindingである[`mizchi/js_web/nn`](https://github.com/mizchi/js.mbt/tree/main/modules/js_web/nn)の上に、Chrome間のcompatibility adapter、型付きgraph builder、program cache、execution pool、TFLiteからWebNNへのloweringを提供します。Chrome Canaryのheadless modeで実装との互換性を継続検証しています。
 
 現時点では `float32`、固定 shape、named multi-input/output の推論を対象にしています。対応演算は次のとおりです。
 
@@ -186,8 +186,7 @@ backend/cpu          backend/webnn
 - `model`: backend 非依存のモデル定義
 - `bert`: Hugging Face named tensorの検証、dense weight転置、BERT parameterへの変換
 - `backend/cpu`: differential test 用の eager CPU 実装
-- `webnn/raw`: WebNN JavaScript API の薄い FFI
-- `webnn/compat`: 現行 Chrome の `deviceType` と最新仕様の `accelerated` の差を吸収
+- `webnn/compat`: 現行 Chrome の `deviceType` と最新仕様の `accelerated` の差を吸収（標準 binding は [`mizchi/js_web/nn`](https://github.com/mizchi/js.mbt/tree/main/modules/js_web/nn) を利用）
 - `backend/webnn`: symbolic tensor、compile、program cache、execution pool、tensor lifecycle
 - `examples/playground/src/app`: Playwright から呼び出す責務別の利用側 browser API adapter
 - `examples/playground/src/benchmark`: CPU/WebNN の正しさを比較しながら setup と steady-state を計測
