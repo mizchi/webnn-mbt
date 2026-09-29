@@ -114,7 +114,7 @@ fn attention_webnn_model(
 }
 
 ///|
-extern "js" fn make_attention_report(
+extern "js" fn make_attention_report_ffi(
   tokens : Int,
   width : Int,
   heads : Int,
@@ -126,8 +126,8 @@ extern "js" fn make_attention_report(
   graph_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  cpu_samples_ms : Array[Double],
-  webnn_samples_ms : Array[Double],
+  cpu_samples_ms : FixedArray[Double],
+  webnn_samples_ms : FixedArray[Double],
   maximum_absolute_error : Float,
 ) -> @core.Any =
   #| (tokens, width, heads, maskMode, operationsPerSample, warmup, iterations, contextMs, graphMs, compileMs, prepareMs, cpuSamplesMs, webnnSamplesMs, maxAbsError) => ({
@@ -146,6 +146,25 @@ extern "js" fn make_attention_report(
   #|   webnnSamplesMs,
   #|   maxAbsError,
   #| })
+
+fn make_attention_report(
+  tokens : Int,
+  width : Int,
+  heads : Int,
+  mask_mode : String,
+  operations_per_sample : Int,
+  warmup : Int,
+  iterations : Int,
+  context_ms : Double,
+  graph_ms : Double,
+  compile_ms : Double,
+  prepare_ms : Double,
+  cpu_samples_ms : Array[Double],
+  webnn_samples_ms : Array[Double],
+  maximum_absolute_error : Float,
+) -> @core.Any {
+  make_attention_report_ffi(tokens, width, heads, mask_mode, operations_per_sample, warmup, iterations, context_ms, graph_ms, compile_ms, prepare_ms, FixedArray::from_array(cpu_samples_ms), FixedArray::from_array(webnn_samples_ms), maximum_absolute_error)
+}
 
 ///|
 pub async fn self_attention(

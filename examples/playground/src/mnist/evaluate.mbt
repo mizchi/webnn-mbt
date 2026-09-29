@@ -79,17 +79,17 @@ fn max_abs_error(lhs : Array[Float], rhs : Array[Float]) -> Float {
 }
 
 ///|
-extern "js" fn make_evaluation_report(
+extern "js" fn make_evaluation_report_ffi(
   count : Int,
   cpu_correct : Int,
   webnn_correct : Int,
   prediction_matches : Int,
   max_abs_error : Float,
-  labels : Array[Int],
-  cpu_predictions : Array[Int],
-  webnn_predictions : Array[Int],
-  cpu_logits : Array[Float],
-  webnn_logits : Array[Float],
+  labels : FixedArray[Int],
+  cpu_predictions : FixedArray[Int],
+  webnn_predictions : FixedArray[Int],
+  cpu_logits : FixedArray[Float],
+  webnn_logits : FixedArray[Float],
 ) -> @core.Any =
   #| (count, cpuCorrect, webnnCorrect, predictionMatches, maxAbsError, labels, cpuPredictions, webnnPredictions, cpuLogits, webnnLogits) => ({
   #|   count,
@@ -103,6 +103,21 @@ extern "js" fn make_evaluation_report(
   #|   cpuLogits,
   #|   webnnLogits,
   #| })
+
+fn make_evaluation_report(
+  count : Int,
+  cpu_correct : Int,
+  webnn_correct : Int,
+  prediction_matches : Int,
+  max_abs_error : Float,
+  labels : Array[Int],
+  cpu_predictions : Array[Int],
+  webnn_predictions : Array[Int],
+  cpu_logits : Array[Float],
+  webnn_logits : Array[Float],
+) -> @core.Any {
+  make_evaluation_report_ffi(count, cpu_correct, webnn_correct, prediction_matches, max_abs_error, FixedArray::from_array(labels), FixedArray::from_array(cpu_predictions), FixedArray::from_array(webnn_predictions), FixedArray::from_array(cpu_logits), FixedArray::from_array(webnn_logits))
+}
 
 ///|
 pub async fn evaluate(count : Int) -> @core.Any {

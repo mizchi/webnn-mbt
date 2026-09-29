@@ -119,14 +119,14 @@ fn benchmark_bert_encoder(
 }
 
 ///|
-extern "js" fn make_bert_safetensors_fixture_report(
+extern "js" fn make_bert_safetensors_fixture_report_ffi(
   file_bytes : Int,
   tensor_count : Int,
   layers : Int,
-  input_shape : Array[Int],
-  output_shape : Array[Int],
-  cpu_output : Array[Float],
-  webnn_output : Array[Float],
+  input_shape : FixedArray[Int],
+  output_shape : FixedArray[Int],
+  cpu_output : FixedArray[Float],
+  webnn_output : FixedArray[Float],
   maximum_absolute_error : Float,
 ) -> @core.Any =
   #| (fileBytes, tensorCount, layers, inputShape, outputShape, cpuOutput, webnnOutput, maxAbsError) => ({
@@ -139,6 +139,19 @@ extern "js" fn make_bert_safetensors_fixture_report(
   #|   webnnOutput,
   #|   maxAbsError,
   #| })
+
+fn make_bert_safetensors_fixture_report(
+  file_bytes : Int,
+  tensor_count : Int,
+  layers : Int,
+  input_shape : Array[Int],
+  output_shape : Array[Int],
+  cpu_output : Array[Float],
+  webnn_output : Array[Float],
+  maximum_absolute_error : Float,
+) -> @core.Any {
+  make_bert_safetensors_fixture_report_ffi(file_bytes, tensor_count, layers, FixedArray::from_array(input_shape), FixedArray::from_array(output_shape), FixedArray::from_array(cpu_output), FixedArray::from_array(webnn_output), maximum_absolute_error)
+}
 
 ///|
 fn bert_fixture_max_abs_error(

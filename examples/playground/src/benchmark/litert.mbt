@@ -20,7 +20,7 @@ fn litert_linear_model() -> @litert.LiteRtModel raise {
 }
 
 ///|
-extern "js" fn make_litert_benchmark_report(
+extern "js" fn make_litert_benchmark_report_ffi(
   warmup : Int,
   iterations : Int,
   operations_per_sample : Int,
@@ -28,8 +28,8 @@ extern "js" fn make_litert_benchmark_report(
   lower_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  samples_ms : Array[Double],
-  output : Array[Float],
+  samples_ms : FixedArray[Double],
+  output : FixedArray[Float],
 ) -> @core.Any =
   #| (warmup, iterations, operationsPerSample, contextMs, lowerMs, compileMs, prepareMs, samplesMs, output) => ({
   #|   warmup,
@@ -42,6 +42,20 @@ extern "js" fn make_litert_benchmark_report(
   #|   samplesMs,
   #|   output,
   #| })
+
+fn make_litert_benchmark_report(
+  warmup : Int,
+  iterations : Int,
+  operations_per_sample : Int,
+  context_ms : Double,
+  lower_ms : Double,
+  compile_ms : Double,
+  prepare_ms : Double,
+  samples_ms : Array[Double],
+  output : Array[Float],
+) -> @core.Any {
+  make_litert_benchmark_report_ffi(warmup, iterations, operations_per_sample, context_ms, lower_ms, compile_ms, prepare_ms, FixedArray::from_array(samples_ms), FixedArray::from_array(output))
+}
 
 ///|
 pub async fn litert_linear(warmup : Int, iterations : Int) -> @core.Any {
@@ -135,7 +149,7 @@ extern "js" fn tflite_int8_per_axis_runtime_add_fixture() -> Bytes =
   #| )
 
 ///|
-extern "js" fn make_tflite_benchmark_report(
+extern "js" fn make_tflite_benchmark_report_ffi(
   warmup : Int,
   iterations : Int,
   operations_per_sample : Int,
@@ -144,8 +158,8 @@ extern "js" fn make_tflite_benchmark_report(
   lower_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  samples_ms : Array[Double],
-  output : Array[Float],
+  samples_ms : FixedArray[Double],
+  output : FixedArray[Float],
 ) -> @core.Any =
   #| (warmup, iterations, operationsPerSample, parseMs, contextMs, lowerMs, compileMs, prepareMs, samplesMs, output) => ({
   #|   warmup,
@@ -159,6 +173,21 @@ extern "js" fn make_tflite_benchmark_report(
   #|   samplesMs,
   #|   output,
   #| })
+
+fn make_tflite_benchmark_report(
+  warmup : Int,
+  iterations : Int,
+  operations_per_sample : Int,
+  parse_ms : Double,
+  context_ms : Double,
+  lower_ms : Double,
+  compile_ms : Double,
+  prepare_ms : Double,
+  samples_ms : Array[Double],
+  output : Array[Float],
+) -> @core.Any {
+  make_tflite_benchmark_report_ffi(warmup, iterations, operations_per_sample, parse_ms, context_ms, lower_ms, compile_ms, prepare_ms, FixedArray::from_array(samples_ms), FixedArray::from_array(output))
+}
 
 ///|
 pub async fn tflite_fully_connected(
@@ -479,13 +508,13 @@ pub async fn tflite_per_axis_int8_raw(
 }
 
 ///|
-extern "js" fn make_tflite_runner_cache_benchmark_report(
+extern "js" fn make_tflite_runner_cache_benchmark_report_ffi(
   warmup : Int,
   iterations : Int,
   hit_operations_per_sample : Int,
-  cold_samples_ms : Array[Double],
-  hit_samples_ms : Array[Double],
-  output : Array[Int],
+  cold_samples_ms : FixedArray[Double],
+  hit_samples_ms : FixedArray[Double],
+  output : FixedArray[Int],
   cache_size : Int,
 ) -> @core.Any =
   #| (warmup, iterations, hitOperationsPerSample, coldSamplesMs, hitSamplesMs, output, cacheSize) => ({
@@ -497,6 +526,18 @@ extern "js" fn make_tflite_runner_cache_benchmark_report(
   #|   output,
   #|   cacheSize,
   #| })
+
+fn make_tflite_runner_cache_benchmark_report(
+  warmup : Int,
+  iterations : Int,
+  hit_operations_per_sample : Int,
+  cold_samples_ms : Array[Double],
+  hit_samples_ms : Array[Double],
+  output : Array[Int],
+  cache_size : Int,
+) -> @core.Any {
+  make_tflite_runner_cache_benchmark_report_ffi(warmup, iterations, hit_operations_per_sample, FixedArray::from_array(cold_samples_ms), FixedArray::from_array(hit_samples_ms), FixedArray::from_array(output), cache_size)
+}
 
 ///|
 fn tflite_runner_raw_output(

@@ -65,11 +65,18 @@ extern "js" fn safetensors_header_dtype(
   #| (header, index) => header.entries[index].dtype
 
 ///|
-extern "js" fn safetensors_header_shape(
+extern "js" fn safetensors_header_shape_ffi(
   header : @core.Any,
   index : Int,
-) -> Array[Int] =
+) -> FixedArray[Int] =
   #| (header, index) => header.entries[index].shape
+
+fn safetensors_header_shape(
+  header : @core.Any,
+  index : Int,
+) -> Array[Int] {
+  Array::from_fixed_array(safetensors_header_shape_ffi(header, index))
+}
 
 ///|
 extern "js" fn safetensors_header_start(header : @core.Any, index : Int) -> Int =

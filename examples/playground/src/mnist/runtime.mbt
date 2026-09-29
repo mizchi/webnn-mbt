@@ -75,12 +75,12 @@ async fn cached_run(
 }
 
 ///|
-extern "js" fn make_cached_report(
+extern "js" fn make_cached_report_ffi(
   batch_size : Int,
   cache_hit : Bool,
   cache_size : Int,
-  logits : Array[Float],
-  predicted : Array[Int],
+  logits : FixedArray[Float],
+  predicted : FixedArray[Int],
 ) -> @core.Any =
   #| (batchSize, cacheHit, cacheSize, logits, predictions) => ({
   #|   batchSize,
@@ -89,6 +89,16 @@ extern "js" fn make_cached_report(
   #|   logits,
   #|   predictions,
   #| })
+
+fn make_cached_report(
+  batch_size : Int,
+  cache_hit : Bool,
+  cache_size : Int,
+  logits : Array[Float],
+  predicted : Array[Int],
+) -> @core.Any {
+  make_cached_report_ffi(batch_size, cache_hit, cache_size, FixedArray::from_array(logits), FixedArray::from_array(predicted))
+}
 
 ///|
 pub async fn run_cached(batch_size : Int) -> @core.Any {
@@ -116,13 +126,13 @@ pub fn clear_program_cache() -> Int {
 }
 
 ///|
-extern "js" fn make_cache_benchmark_report(
+extern "js" fn make_cache_benchmark_report_ffi(
   batch_size : Int,
   operations_per_sample : Int,
   warmup : Int,
   iterations : Int,
-  cold_samples_ms : Array[Double],
-  hit_samples_ms : Array[Double],
+  cold_samples_ms : FixedArray[Double],
+  hit_samples_ms : FixedArray[Double],
   cold_misses : Int,
   cache_size : Int,
   prediction_matches : Int,
@@ -140,6 +150,21 @@ extern "js" fn make_cache_benchmark_report(
   #|   predictionMatches,
   #|   maxAbsError,
   #| })
+
+fn make_cache_benchmark_report(
+  batch_size : Int,
+  operations_per_sample : Int,
+  warmup : Int,
+  iterations : Int,
+  cold_samples_ms : Array[Double],
+  hit_samples_ms : Array[Double],
+  cold_misses : Int,
+  cache_size : Int,
+  prediction_matches : Int,
+  maximum_absolute_error : Float,
+) -> @core.Any {
+  make_cache_benchmark_report_ffi(batch_size, operations_per_sample, warmup, iterations, FixedArray::from_array(cold_samples_ms), FixedArray::from_array(hit_samples_ms), cold_misses, cache_size, prediction_matches, maximum_absolute_error)
+}
 
 ///| Measures the application-level cache path. Fixture loading and CPU
 

@@ -8,13 +8,13 @@ extern "js" fn run_concurrent_requests(
   #| )
 
 ///|
-extern "js" fn make_pool_benchmark_report(
+extern "js" fn make_pool_benchmark_report_ffi(
   pool_size : Int,
   request_count : Int,
   warmup : Int,
   iterations : Int,
   setup_ms : Double,
-  samples_ms : Array[Double],
+  samples_ms : FixedArray[Double],
   maximum_concurrency : Int,
   prediction_matches : Int,
   maximum_absolute_error : Float,
@@ -30,6 +30,20 @@ extern "js" fn make_pool_benchmark_report(
   #|   predictionMatches,
   #|   maxAbsError,
   #| })
+
+fn make_pool_benchmark_report(
+  pool_size : Int,
+  request_count : Int,
+  warmup : Int,
+  iterations : Int,
+  setup_ms : Double,
+  samples_ms : Array[Double],
+  maximum_concurrency : Int,
+  prediction_matches : Int,
+  maximum_absolute_error : Float,
+) -> @core.Any {
+  make_pool_benchmark_report_ffi(pool_size, request_count, warmup, iterations, setup_ms, FixedArray::from_array(samples_ms), maximum_concurrency, prediction_matches, maximum_absolute_error)
+}
 
 ///|
 pub async fn benchmark_pool(
