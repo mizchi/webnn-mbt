@@ -1,18 +1,34 @@
 ///|
-extern "js" fn run_program_pair(
+extern "js" fn run_program_pair_ffi(
   run : (Array[Float]) -> @core.Promise[Array[Float]],
-  first : Array[Float],
-  second : Array[Float],
+  first : FixedArray[Float],
+  second : FixedArray[Float],
 ) -> @core.Promise[Array[Array[Float]]] =
   #| (run, first, second) => Promise.all([run(first), run(second)])
 
+fn run_program_pair(
+  run : (Array[Float]) -> @core.Promise[Array[Float]],
+  first : Array[Float],
+  second : Array[Float],
+) -> @core.Promise[Array[Array[Float]]] {
+  run_program_pair_ffi(run, FixedArray::from_array(first), FixedArray::from_array(second))
+}
+
 ///|
-extern "js" fn run_int_program_pair(
+extern "js" fn run_int_program_pair_ffi(
+  run : (Array[Int]) -> @core.Promise[Array[Int]],
+  first : FixedArray[Int],
+  second : FixedArray[Int],
+) -> @core.Promise[Array[Array[Int]]] =
+  #| (run, first, second) => Promise.all([run(first), run(second)])
+
+fn run_int_program_pair(
   run : (Array[Int]) -> @core.Promise[Array[Int]],
   first : Array[Int],
   second : Array[Int],
-) -> @core.Promise[Array[Array[Int]]] =
-  #| (run, first, second) => Promise.all([run(first), run(second)])
+) -> @core.Promise[Array[Array[Int]]] {
+  run_int_program_pair_ffi(run, FixedArray::from_array(first), FixedArray::from_array(second))
+}
 
 ///|
 extern "js" fn make_program_concurrency_report_ffi(
