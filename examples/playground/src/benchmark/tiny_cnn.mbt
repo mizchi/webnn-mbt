@@ -281,7 +281,7 @@ fn maximum_probability_sum_error(
 }
 
 ///|
-extern "js" fn make_tiny_cnn_report(
+extern "js" fn make_tiny_cnn_report_ffi(
   input_layout : String,
   batch_size : Int,
   operations_per_sample : Int,
@@ -291,8 +291,8 @@ extern "js" fn make_tiny_cnn_report(
   graph_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  cpu_samples_ms : Array[Double],
-  webnn_samples_ms : Array[Double],
+  cpu_samples_ms : FixedArray[Double],
+  webnn_samples_ms : FixedArray[Double],
   prediction_matches : Int,
   maximum_absolute_error : Float,
   maximum_probability_sum_error : Float,
@@ -313,6 +313,25 @@ extern "js" fn make_tiny_cnn_report(
   #|   maxAbsError,
   #|   maxProbabilitySumError,
   #| })
+
+fn make_tiny_cnn_report(
+  input_layout : String,
+  batch_size : Int,
+  operations_per_sample : Int,
+  warmup : Int,
+  iterations : Int,
+  context_ms : Double,
+  graph_ms : Double,
+  compile_ms : Double,
+  prepare_ms : Double,
+  cpu_samples_ms : Array[Double],
+  webnn_samples_ms : Array[Double],
+  prediction_matches : Int,
+  maximum_absolute_error : Float,
+  maximum_probability_sum_error : Float,
+) -> @core.Any {
+  make_tiny_cnn_report_ffi(input_layout, batch_size, operations_per_sample, warmup, iterations, context_ms, graph_ms, compile_ms, prepare_ms, FixedArray::from_array(cpu_samples_ms), FixedArray::from_array(webnn_samples_ms), prediction_matches, maximum_absolute_error, maximum_probability_sum_error)
+}
 
 ///|
 pub async fn tiny_cnn(

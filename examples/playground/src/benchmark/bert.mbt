@@ -1,5 +1,5 @@
 ///|
-extern "js" fn make_bert_encoder_report(
+extern "js" fn make_bert_encoder_report_ffi(
   layers : Int,
   tensor_count : Int,
   batch_size : Int,
@@ -16,8 +16,8 @@ extern "js" fn make_bert_encoder_report(
   graph_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  cpu_samples_ms : Array[Double],
-  webnn_samples_ms : Array[Double],
+  cpu_samples_ms : FixedArray[Double],
+  webnn_samples_ms : FixedArray[Double],
   cpu_checksum : Float,
   webnn_checksum : Float,
   maximum_absolute_error : Float,
@@ -46,6 +46,32 @@ extern "js" fn make_bert_encoder_report(
   #|   webnnChecksum,
   #|   maxAbsError,
   #| })
+
+fn make_bert_encoder_report(
+  layers : Int,
+  tensor_count : Int,
+  batch_size : Int,
+  tokens : Int,
+  width : Int,
+  hidden_size : Int,
+  heads : Int,
+  mask_mode : String,
+  operations_per_sample : Int,
+  warmup : Int,
+  iterations : Int,
+  load_ms : Double,
+  context_ms : Double,
+  graph_ms : Double,
+  compile_ms : Double,
+  prepare_ms : Double,
+  cpu_samples_ms : Array[Double],
+  webnn_samples_ms : Array[Double],
+  cpu_checksum : Float,
+  webnn_checksum : Float,
+  maximum_absolute_error : Float,
+) -> @core.Any {
+  make_bert_encoder_report_ffi(layers, tensor_count, batch_size, tokens, width, hidden_size, heads, mask_mode, operations_per_sample, warmup, iterations, load_ms, context_ms, graph_ms, compile_ms, prepare_ms, FixedArray::from_array(cpu_samples_ms), FixedArray::from_array(webnn_samples_ms), cpu_checksum, webnn_checksum, maximum_absolute_error)
+}
 
 ///|
 pub async fn bert_encoder(

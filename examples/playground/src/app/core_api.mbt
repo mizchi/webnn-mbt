@@ -15,11 +15,11 @@ fn run_grouped_conv() -> @core.Promise[Array[Float]] {
 }
 
 ///|
-extern "js" fn make_preferred_layout_conv_report(
+extern "js" fn make_preferred_layout_conv_report_ffi(
   preferred_input_layout : String,
-  input_shape : Array[Int],
-  filter_shape : Array[Int],
-  output : Array[Float],
+  input_shape : FixedArray[Int],
+  filter_shape : FixedArray[Int],
+  output : FixedArray[Float],
 ) -> @core.Any =
   #| (preferredInputLayout, inputShape, filterShape, output) => ({
   #|   preferredInputLayout,
@@ -27,6 +27,15 @@ extern "js" fn make_preferred_layout_conv_report(
   #|   filterShape,
   #|   output,
   #| })
+
+fn make_preferred_layout_conv_report(
+  preferred_input_layout : String,
+  input_shape : Array[Int],
+  filter_shape : Array[Int],
+  output : Array[Float],
+) -> @core.Any {
+  make_preferred_layout_conv_report_ffi(preferred_input_layout, FixedArray::from_array(input_shape), FixedArray::from_array(filter_shape), FixedArray::from_array(output))
+}
 
 ///|
 fn run_preferred_layout_conv() -> @core.Promise[@core.Any] {
@@ -132,9 +141,9 @@ fn benchmark_named_io(
 }
 
 ///|
-extern "js" fn make_named_multi_io_report(
-  names : Array[String],
-  values : Array[Array[Float]],
+extern "js" fn make_named_multi_io_report_ffi(
+  names : FixedArray[String],
+  values : FixedArray[FixedArray[Float]],
   duplicate_input_rejected : Bool,
   unknown_input_rejected : Bool,
   input_count_rejected : Bool,
@@ -152,6 +161,18 @@ extern "js" fn make_named_multi_io_report(
   #|   inputLengthRejected,
   #|   duplicateOutputRejected,
   #| })
+
+fn make_named_multi_io_report(
+  names : Array[String],
+  values : Array[Array[Float]],
+  duplicate_input_rejected : Bool,
+  unknown_input_rejected : Bool,
+  input_count_rejected : Bool,
+  input_length_rejected : Bool,
+  duplicate_output_rejected : Bool,
+) -> @core.Any {
+  make_named_multi_io_report_ffi(FixedArray::from_array(names), FixedArray::from_array(values.map(fn(__a1) { FixedArray::from_array(__a1) })), duplicate_input_rejected, unknown_input_rejected, input_count_rejected, input_length_rejected, duplicate_output_rejected)
+}
 
 ///|
 fn run_named_multi_io() -> @core.Promise[@core.Any] {

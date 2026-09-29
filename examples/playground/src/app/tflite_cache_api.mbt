@@ -2,12 +2,20 @@
 let tflite_runner_cache : @webnn.TfliteRunnerCache = @webnn.TfliteRunnerCache::new()
 
 ///|
-extern "js" fn tflite_runner_cache_report(
-  first : Array[Int],
-  second : Array[Int],
+extern "js" fn tflite_runner_cache_report_ffi(
+  first : FixedArray[Int],
+  second : FixedArray[Int],
   cache_size : Int,
 ) -> @core.Any =
   #| (first, second, cacheSize) => ({ first, second, cacheSize })
+
+fn tflite_runner_cache_report(
+  first : Array[Int],
+  second : Array[Int],
+  cache_size : Int,
+) -> @core.Any {
+  tflite_runner_cache_report_ffi(FixedArray::from_array(first), FixedArray::from_array(second), cache_size)
+}
 
 ///|
 fn quantized_tflite_runner_output(
@@ -84,8 +92,8 @@ fn run_tflite_cpu_per_axis_int8_raw() -> @core.Promise[Array[Int]] {
 }
 
 ///|
-extern "js" fn tflite_runtime_cpu_fallback_report(
-  output : Array[Int],
+extern "js" fn tflite_runtime_cpu_fallback_report_ffi(
+  output : FixedArray[Int],
   misses : Int,
   entries : Int,
   cpu_fallbacks : Int,
@@ -93,6 +101,15 @@ extern "js" fn tflite_runtime_cpu_fallback_report(
   #| (output, misses, entries, cpuFallbacks) => ({
   #|   output, misses, entries, cpuFallbacks,
   #| })
+
+fn tflite_runtime_cpu_fallback_report(
+  output : Array[Int],
+  misses : Int,
+  entries : Int,
+  cpu_fallbacks : Int,
+) -> @core.Any {
+  tflite_runtime_cpu_fallback_report_ffi(FixedArray::from_array(output), misses, entries, cpu_fallbacks)
+}
 
 ///|
 /// Exercise the explicit CPU fallback policy. Tests temporarily hide
@@ -172,9 +189,9 @@ fn probe_tflite_runtime_policy() -> @core.Promise[@core.Any] {
 }
 
 ///|
-extern "js" fn tflite_runtime_cpu_fallback_cache_report(
-  first : Array[Int],
-  second : Array[Int],
+extern "js" fn tflite_runtime_cpu_fallback_cache_report_ffi(
+  first : FixedArray[Int],
+  second : FixedArray[Int],
   cpu_fallbacks : Int,
   cpu_cache_hits : Int,
   cpu_cache_misses : Int,
@@ -190,6 +207,18 @@ extern "js" fn tflite_runtime_cpu_fallback_cache_report(
   #|   cpuCacheEntries,
   #|   cpuCacheResidentBytes,
   #| })
+
+fn tflite_runtime_cpu_fallback_cache_report(
+  first : Array[Int],
+  second : Array[Int],
+  cpu_fallbacks : Int,
+  cpu_cache_hits : Int,
+  cpu_cache_misses : Int,
+  cpu_cache_entries : Int,
+  cpu_cache_resident_bytes : Int,
+) -> @core.Any {
+  tflite_runtime_cpu_fallback_cache_report_ffi(FixedArray::from_array(first), FixedArray::from_array(second), cpu_fallbacks, cpu_cache_hits, cpu_cache_misses, cpu_cache_entries, cpu_cache_resident_bytes)
+}
 
 ///|
 /// Runs the same failed-WebNN request twice to verify parsed CPU fallback

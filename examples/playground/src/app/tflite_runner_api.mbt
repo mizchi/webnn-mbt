@@ -52,14 +52,21 @@ fn run_tflite_runner_named_add() -> @core.Promise[Array[Float]] {
 }
 
 ///|
-extern "js" fn tflite_runner_multi_io_report(
-  names : Array[String],
-  outputs : Array[Array[Float]],
+extern "js" fn tflite_runner_multi_io_report_ffi(
+  names : FixedArray[String],
+  outputs : FixedArray[FixedArray[Float]],
 ) -> @core.Any =
   #| (names, outputs) => ({
   #|   names,
   #|   outputs: Object.fromEntries(names.map((name, index) => [name, outputs[index]])),
   #| })
+
+fn tflite_runner_multi_io_report(
+  names : Array[String],
+  outputs : Array[Array[Float]],
+) -> @core.Any {
+  tflite_runner_multi_io_report_ffi(FixedArray::from_array(names), FixedArray::from_array(outputs.map(fn(__a1) { FixedArray::from_array(__a1) })))
+}
 
 ///|
 /// Runs a TFLite graph with two named inputs and two declared outputs.

@@ -17,7 +17,7 @@ fn named_io_values(size : Int, offset : Int) -> Array[Float] {
 }
 
 ///|
-extern "js" fn make_named_io_benchmark_report(
+extern "js" fn make_named_io_benchmark_report_ffi(
   size : Int,
   warmup : Int,
   iterations : Int,
@@ -26,8 +26,8 @@ extern "js" fn make_named_io_benchmark_report(
   two_compile_ms : Double,
   one_prepare_ms : Double,
   two_prepare_ms : Double,
-  one_output_samples_ms : Array[Double],
-  two_output_samples_ms : Array[Double],
+  one_output_samples_ms : FixedArray[Double],
+  two_output_samples_ms : FixedArray[Double],
   maximum_absolute_error : Float,
 ) -> @core.Any =
   #| (size, warmup, iterations, operationsPerSample, oneCompileMs, twoCompileMs, onePrepareMs, twoPrepareMs, oneOutputSamplesMs, twoOutputSamplesMs, maxAbsError) => ({
@@ -43,6 +43,22 @@ extern "js" fn make_named_io_benchmark_report(
   #|   twoOutputSamplesMs,
   #|   maxAbsError,
   #| })
+
+fn make_named_io_benchmark_report(
+  size : Int,
+  warmup : Int,
+  iterations : Int,
+  operations_per_sample : Int,
+  one_compile_ms : Double,
+  two_compile_ms : Double,
+  one_prepare_ms : Double,
+  two_prepare_ms : Double,
+  one_output_samples_ms : Array[Double],
+  two_output_samples_ms : Array[Double],
+  maximum_absolute_error : Float,
+) -> @core.Any {
+  make_named_io_benchmark_report_ffi(size, warmup, iterations, operations_per_sample, one_compile_ms, two_compile_ms, one_prepare_ms, two_prepare_ms, FixedArray::from_array(one_output_samples_ms), FixedArray::from_array(two_output_samples_ms), maximum_absolute_error)
+}
 
 ///|
 priv struct NamedIoMeasurement {

@@ -1,7 +1,7 @@
 ///|
-extern "js" fn make_test_safetensors(
+extern "js" fn make_test_safetensors_ffi(
   header : String,
-  values : Array[Float],
+  values : FixedArray[Float],
 ) -> Bytes =
   #| (header, values) => {
   #|   const encoded = new TextEncoder().encode(header);
@@ -12,6 +12,13 @@ extern "js" fn make_test_safetensors(
   #|   values.forEach((value, index) => view.setFloat32(8 + encoded.length + index * 4, value, true));
   #|   return output;
   #| }
+
+fn make_test_safetensors(
+  header : String,
+  values : Array[Float],
+) -> Bytes {
+  make_test_safetensors_ffi(header, FixedArray::from_array(values))
+}
 
 ///|
 test "SafeTensors parser decodes packed F32 named tensors" {

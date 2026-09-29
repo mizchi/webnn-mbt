@@ -3,7 +3,7 @@ extern "js" fn performance_now() -> Double =
   #| () => performance.now()
 
 ///|
-extern "js" fn make_report(
+extern "js" fn make_report_ffi(
   size : Int,
   warmup : Int,
   iterations : Int,
@@ -11,9 +11,9 @@ extern "js" fn make_report(
   context_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  cpu_samples_ms : Array[Double],
-  webnn_fresh_samples_ms : Array[Double],
-  webnn_samples_ms : Array[Double],
+  cpu_samples_ms : FixedArray[Double],
+  webnn_fresh_samples_ms : FixedArray[Double],
+  webnn_samples_ms : FixedArray[Double],
   cpu_checksum : Float,
   webnn_checksum : Float,
   max_abs_error : Float,
@@ -34,6 +34,24 @@ extern "js" fn make_report(
   #|   webnnChecksum,
   #|   maxAbsError,
   #| })
+
+fn make_report(
+  size : Int,
+  warmup : Int,
+  iterations : Int,
+  batch_size : Int,
+  context_ms : Double,
+  compile_ms : Double,
+  prepare_ms : Double,
+  cpu_samples_ms : Array[Double],
+  webnn_fresh_samples_ms : Array[Double],
+  webnn_samples_ms : Array[Double],
+  cpu_checksum : Float,
+  webnn_checksum : Float,
+  max_abs_error : Float,
+) -> @core.Any {
+  make_report_ffi(size, warmup, iterations, batch_size, context_ms, compile_ms, prepare_ms, FixedArray::from_array(cpu_samples_ms), FixedArray::from_array(webnn_fresh_samples_ms), FixedArray::from_array(webnn_samples_ms), cpu_checksum, webnn_checksum, max_abs_error)
+}
 
 ///|
 fn matrix_values(size : Int, multiplier : Int) -> Array[Float] {

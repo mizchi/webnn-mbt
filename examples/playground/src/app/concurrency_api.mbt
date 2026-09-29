@@ -15,10 +15,10 @@ extern "js" fn run_int_program_pair(
   #| (run, first, second) => Promise.all([run(first), run(second)])
 
 ///|
-extern "js" fn make_program_concurrency_report(
-  results : Array[Array[Float]],
+extern "js" fn make_program_concurrency_report_ffi(
+  results : FixedArray[FixedArray[Float]],
   rejected_run_recovered : Bool,
-  result_after_rejected_run : Array[Float],
+  result_after_rejected_run : FixedArray[Float],
   run_after_destroy_rejected : Bool,
 ) -> @core.Any =
   #| (results, rejectedRunRecovered, resultAfterRejectedRun, runAfterDestroyRejected) => ({
@@ -28,16 +28,32 @@ extern "js" fn make_program_concurrency_report(
   #|   runAfterDestroyRejected,
   #| })
 
+fn make_program_concurrency_report(
+  results : Array[Array[Float]],
+  rejected_run_recovered : Bool,
+  result_after_rejected_run : Array[Float],
+  run_after_destroy_rejected : Bool,
+) -> @core.Any {
+  make_program_concurrency_report_ffi(FixedArray::from_array(results.map(fn(__a1) { FixedArray::from_array(__a1) })), rejected_run_recovered, FixedArray::from_array(result_after_rejected_run), run_after_destroy_rejected)
+}
+
 ///|
-extern "js" fn make_tflite_runner_cache_concurrency_report(
-  results : Array[Array[Int]],
+extern "js" fn make_tflite_runner_cache_concurrency_report_ffi(
+  results : FixedArray[FixedArray[Int]],
   cache_size : Int,
 ) -> @core.Any =
   #| (results, cacheSize) => ({ results, cacheSize })
 
+fn make_tflite_runner_cache_concurrency_report(
+  results : Array[Array[Int]],
+  cache_size : Int,
+) -> @core.Any {
+  make_tflite_runner_cache_concurrency_report_ffi(FixedArray::from_array(results.map(fn(__a1) { FixedArray::from_array(__a1) })), cache_size)
+}
+
 ///|
-extern "js" fn make_execution_pool_report(
-  results : Array[Array[Float]],
+extern "js" fn make_execution_pool_report_ffi(
+  results : FixedArray[FixedArray[Float]],
   pool_size : Int,
   maximum_concurrency : Int,
   run_after_destroy_rejected : Bool,
@@ -48,6 +64,15 @@ extern "js" fn make_execution_pool_report(
   #|   maximumConcurrency,
   #|   runAfterDestroyRejected,
   #| })
+
+fn make_execution_pool_report(
+  results : Array[Array[Float]],
+  pool_size : Int,
+  maximum_concurrency : Int,
+  run_after_destroy_rejected : Bool,
+) -> @core.Any {
+  make_execution_pool_report_ffi(FixedArray::from_array(results.map(fn(__a1) { FixedArray::from_array(__a1) })), pool_size, maximum_concurrency, run_after_destroy_rejected)
+}
 
 ///|
 async fn compile_probe_program(pool_size : Int) -> @webnn.WebNNProgram {
@@ -96,8 +121,8 @@ extern "js" fn compile_gate_open(gate : CompileGate) -> Unit =
   #| (gate) => gate.open()
 
 ///|
-extern "js" fn make_program_cache_clear_race_report(
-  output : Array[Float],
+extern "js" fn make_program_cache_clear_race_report_ffi(
+  output : FixedArray[Float],
   cache_hit : Bool,
   cache_size_after_clear : Int,
 ) -> @core.Any =
@@ -106,6 +131,14 @@ extern "js" fn make_program_cache_clear_race_report(
   #|   cacheHit,
   #|   cacheSizeAfterClear,
   #| })
+
+fn make_program_cache_clear_race_report(
+  output : Array[Float],
+  cache_hit : Bool,
+  cache_size_after_clear : Int,
+) -> @core.Any {
+  make_program_cache_clear_race_report_ffi(FixedArray::from_array(output), cache_hit, cache_size_after_clear)
+}
 
 ///|
 fn probe_program_cache_clear_during_compile() -> @core.Promise[@core.Any] {
@@ -135,8 +168,8 @@ fn probe_program_cache_clear_during_compile() -> @core.Promise[@core.Any] {
 }
 
 ///|
-extern "js" fn make_tflite_runner_cache_clear_race_report(
-  output : Array[Float],
+extern "js" fn make_tflite_runner_cache_clear_race_report_ffi(
+  output : FixedArray[Float],
   cache_size_after_clear : Int,
   resident_bytes_after_clear : Int,
 ) -> @core.Any =
@@ -145,6 +178,14 @@ extern "js" fn make_tflite_runner_cache_clear_race_report(
   #|   cacheSizeAfterClear,
   #|   residentBytesAfterClear,
   #| })
+
+fn make_tflite_runner_cache_clear_race_report(
+  output : Array[Float],
+  cache_size_after_clear : Int,
+  resident_bytes_after_clear : Int,
+) -> @core.Any {
+  make_tflite_runner_cache_clear_race_report_ffi(FixedArray::from_array(output), cache_size_after_clear, resident_bytes_after_clear)
+}
 
 ///|
 /// Verifies that clear() invalidates an in-flight TFLite runner compilation,

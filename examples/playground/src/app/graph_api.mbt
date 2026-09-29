@@ -8,12 +8,12 @@ fn supported_operators() -> @core.Promise[Array[String]] {
 }
 
 ///|
-extern "js" fn make_webnn_capabilities_report(
+extern "js" fn make_webnn_capabilities_report_ffi(
   compatibility_mode : String,
   preferred_input_layout : String,
   op_support_limits_available : Bool,
   tensor_io_available : Bool,
-  supported_operators : Array[String],
+  supported_operators : FixedArray[String],
 ) -> @core.Any =
   #| (compatibilityMode, preferredInputLayout, opSupportLimitsAvailable, tensorIoAvailable, supportedOperators) => ({
   #|   compatibilityMode,
@@ -22,6 +22,16 @@ extern "js" fn make_webnn_capabilities_report(
   #|   tensorIoAvailable,
   #|   supportedOperators,
   #| })
+
+fn make_webnn_capabilities_report(
+  compatibility_mode : String,
+  preferred_input_layout : String,
+  op_support_limits_available : Bool,
+  tensor_io_available : Bool,
+  supported_operators : Array[String],
+) -> @core.Any {
+  make_webnn_capabilities_report_ffi(compatibility_mode, preferred_input_layout, op_support_limits_available, tensor_io_available, FixedArray::from_array(supported_operators))
+}
 
 ///|
 fn probe_webnn_capabilities() -> @core.Promise[@core.Any] {

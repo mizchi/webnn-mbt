@@ -7,13 +7,13 @@ extern "js" fn fetch_tflite_fixture(url : String) -> @core.Promise[Bytes] =
   #| }
 
 ///|
-extern "js" fn make_micro_speech_fixture_report(
+extern "js" fn make_micro_speech_fixture_report_ffi(
   input_name : String,
-  input_shape : Array[Int],
+  input_shape : FixedArray[Int],
   output_name : String,
-  output_shape : Array[Int],
-  first : Array[Int],
-  second : Array[Int],
+  output_shape : FixedArray[Int],
+  first : FixedArray[Int],
+  second : FixedArray[Int],
   cache_size : Int,
 ) -> @core.Any =
   #| (inputName, inputShape, outputName, outputShape, first, second, cacheSize) => ({
@@ -25,6 +25,18 @@ extern "js" fn make_micro_speech_fixture_report(
   #|   second,
   #|   cacheSize,
   #| })
+
+fn make_micro_speech_fixture_report(
+  input_name : String,
+  input_shape : Array[Int],
+  output_name : String,
+  output_shape : Array[Int],
+  first : Array[Int],
+  second : Array[Int],
+  cache_size : Int,
+) -> @core.Any {
+  make_micro_speech_fixture_report_ffi(input_name, FixedArray::from_array(input_shape), output_name, FixedArray::from_array(output_shape), FixedArray::from_array(first), FixedArray::from_array(second), cache_size)
+}
 
 ///|
 extern "js" fn make_micro_speech_fixture_error_report(
@@ -107,18 +119,38 @@ fn run_person_detection_fixture() -> @core.Promise[@core.Any] {
 }
 
 ///|
-extern "js" fn make_mobilenet_v2_fixture_report(
-  input_shape : Array[Int],
-  output_shape : Array[Int],
+extern "js" fn make_mobilenet_v2_fixture_report_ffi(
+  input_shape : FixedArray[Int],
+  output_shape : FixedArray[Int],
 ) -> @core.Any =
   #| (inputShape, outputShape) => ({ inputShape, outputShape })
+
+fn make_mobilenet_v2_fixture_report(
+  input_shape : Array[Int],
+  output_shape : Array[Int],
+) -> @core.Any {
+  make_mobilenet_v2_fixture_report_ffi(FixedArray::from_array(input_shape), FixedArray::from_array(output_shape))
+}
 
 ///|
 extern "js" fn performance_now() -> Double =
   #| () => performance.now()
 
 ///|
-extern "js" fn make_mobilenet_v2_benchmark_report(
+extern "js" fn make_mobilenet_v2_benchmark_report_ffi(
+  warmup : Int,
+  iterations : Int,
+  cold_samples_ms : FixedArray[Double],
+  hit_samples_ms : FixedArray[Double],
+  prepared_hit_samples_ms : FixedArray[Double],
+  output : FixedArray[Int],
+  cache_size : Int,
+) -> @core.Any =
+  #| (warmup, iterations, coldSamplesMs, hitSamplesMs, preparedHitSamplesMs, output, cacheSize) => ({
+  #|   warmup, iterations, coldSamplesMs, hitSamplesMs, preparedHitSamplesMs, output, cacheSize,
+  #| })
+
+fn make_mobilenet_v2_benchmark_report(
   warmup : Int,
   iterations : Int,
   cold_samples_ms : Array[Double],
@@ -126,10 +158,9 @@ extern "js" fn make_mobilenet_v2_benchmark_report(
   prepared_hit_samples_ms : Array[Double],
   output : Array[Int],
   cache_size : Int,
-) -> @core.Any =
-  #| (warmup, iterations, coldSamplesMs, hitSamplesMs, preparedHitSamplesMs, output, cacheSize) => ({
-  #|   warmup, iterations, coldSamplesMs, hitSamplesMs, preparedHitSamplesMs, output, cacheSize,
-  #| })
+) -> @core.Any {
+  make_mobilenet_v2_benchmark_report_ffi(warmup, iterations, FixedArray::from_array(cold_samples_ms), FixedArray::from_array(hit_samples_ms), FixedArray::from_array(prepared_hit_samples_ms), FixedArray::from_array(output), cache_size)
+}
 
 ///|
 /// Probe a standard MobileNet V2 quantized model to select the next parser

@@ -25,7 +25,7 @@ fn correct_count(predicted : Array[Int], expected : Array[Int]) -> Int {
 }
 
 ///|
-extern "js" fn make_benchmark_report(
+extern "js" fn make_benchmark_report_ffi(
   batch_size : Int,
   operations_per_sample : Int,
   warmup : Int,
@@ -35,9 +35,9 @@ extern "js" fn make_benchmark_report(
   graph_ms : Double,
   compile_ms : Double,
   prepare_ms : Double,
-  cpu_samples_ms : Array[Double],
-  webnn_fresh_samples_ms : Array[Double],
-  webnn_samples_ms : Array[Double],
+  cpu_samples_ms : FixedArray[Double],
+  webnn_fresh_samples_ms : FixedArray[Double],
+  webnn_samples_ms : FixedArray[Double],
   cpu_correct : Int,
   webnn_correct : Int,
   prediction_matches : Int,
@@ -61,6 +61,27 @@ extern "js" fn make_benchmark_report(
   #|   predictionMatches,
   #|   maxAbsError,
   #| })
+
+fn make_benchmark_report(
+  batch_size : Int,
+  operations_per_sample : Int,
+  warmup : Int,
+  iterations : Int,
+  fixture_ms : Double,
+  context_ms : Double,
+  graph_ms : Double,
+  compile_ms : Double,
+  prepare_ms : Double,
+  cpu_samples_ms : Array[Double],
+  webnn_fresh_samples_ms : Array[Double],
+  webnn_samples_ms : Array[Double],
+  cpu_correct : Int,
+  webnn_correct : Int,
+  prediction_matches : Int,
+  maximum_absolute_error : Float,
+) -> @core.Any {
+  make_benchmark_report_ffi(batch_size, operations_per_sample, warmup, iterations, fixture_ms, context_ms, graph_ms, compile_ms, prepare_ms, FixedArray::from_array(cpu_samples_ms), FixedArray::from_array(webnn_fresh_samples_ms), FixedArray::from_array(webnn_samples_ms), cpu_correct, webnn_correct, prediction_matches, maximum_absolute_error)
+}
 
 ///|
 pub async fn benchmark(
